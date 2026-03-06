@@ -8,21 +8,37 @@
 <style>
 /* ── TOKENS ── */
 :root{
-  --cream:#f5f2ed;--paper:#faf8f4;
-  --sage:#8a9e7e;--sage-lt:#d4dece;--sage-dk:#6a7e5e;
-  --ink:#2a2720;--ink2:#5a5550;--ink3:#9a938c;
-  --rust:#a05c3a;--rust-lt:#e8d4c8;
-  --line:#ddd8d0;
+  /* ── 海報金棕色系 · 亮色模式 ── */
+  --bg-outer:#1a1208;
+  --cream:#f5ede0;        /* 溫暖象牙底 */
+  --paper:#fdf6ec;        /* 略白的紙 */
+  --sage:#b5893a;         /* 金色主色 */
+  --sage-lt:#f0deb8;      /* 淡金背景 */
+  --sage-dk:#8a6220;      /* 深金 */
+  --ink:#1e1408;          /* 深棕近黑 */
+  --ink2:#5c4020;         /* 中棕 */
+  --ink3:#a08060;         /* 淡棕灰 */
+  --rust:#8b3a1a;         /* 深紅棕強調 */
+  --rust-lt:#f0d4c0;
+  --line:#e0ceaa;         /* 金米色線條 */
   --una:#6b6098;--una-lt:#ece9f6;
   --eagle:#3d7a9e;--eagle-lt:#e4f0f8;
   --doris:#9e5238;--doris-lt:#f5e8e2;
 }
 body.dark{
-  --cream:#18171a;--paper:#222028;
-  --sage:#7a9e6e;--sage-lt:#1e2e1a;--sage-dk:#9abe8e;
-  --ink:#e8e4dc;--ink2:#a8a49c;--ink3:#5a5660;
-  --rust:#c07a55;--rust-lt:#3a2820;
-  --line:#2e2c36;
+  /* ── 海報深夜金系 · 深色模式 ── */
+  --bg-outer:#0a0804;
+  --cream:#1a1408;        /* 深棕底 */
+  --paper:#231a0c;        /* 略亮的深棕紙 */
+  --sage:#c8963e;         /* 暖金色 */
+  --sage-lt:#2a1e08;      /* 深金底 */
+  --sage-dk:#e8b84a;      /* 亮金 */
+  --ink:#f0e6d0;          /* 象牙白字 */
+  --ink2:#c8a878;         /* 暖米字 */
+  --ink3:#7a6040;         /* 深灰棕 */
+  --rust:#d4825a;
+  --rust-lt:#3a1c08;
+  --line:#3a2c14;         /* 深金線 */
   --una:#9b8fd8;--una-lt:#2a2640;
   --eagle:#5da8d8;--eagle-lt:#1a2e3c;
   --doris:#d07855;--doris-lt:#3c2018;
@@ -32,14 +48,13 @@ body.dark{
 html,body{width:100%;overflow-x:hidden}
 body{
   font-family:'Noto Sans TC',sans-serif;
-  background:var(--cream);color:var(--ink);
+  background:var(--bg-outer);color:var(--ink);
   font-size:15px;line-height:1.75;
-  padding-bottom:max(76px,calc(60px + env(safe-area-inset-bottom)));
   -webkit-font-smoothing:antialiased;
   transition:background .25s,color .25s;
 }
 /* ── HEADER ── */
-.site-header{background:var(--paper);border-bottom:1px solid var(--line);padding:18px 16px 15px;width:100%}
+.site-header{background:var(--paper);border-bottom:1px solid var(--line);padding:18px 16px 15px}
 .header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 /* 左側：標題區 */
 .header-left{min-width:0;flex:1}
@@ -58,14 +73,29 @@ body{
 .npill{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--ink2)}
 .ndot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 /* ── COUNTDOWN ── */
-.timer-strip{background:var(--ink);padding:11px 16px 10px;width:100%}
+.timer-strip{background:var(--ink);padding:11px 16px 10px;width:100%;box-sizing:border-box;border-bottom:1px solid var(--sage-dk)}
 .timer-main{display:flex;align-items:center;gap:10px}
 .t-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.55);flex-shrink:0;font-weight:600}
 #timer{font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;letter-spacing:1px;flex:1;font-weight:600}
 #tlabel{font-size:13px;letter-spacing:.5px;color:rgba(255,255,255,.7);flex-shrink:0;font-weight:600}
 #next-event-bar{font-size:12px;color:rgba(255,255,255,.55);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* ── LAYOUT ── */
-.wrap{width:100%;padding:0 15px}
+/* 手機全寬，桌面置中 480px */
+.app-shell{
+  width:100%;
+  max-width:780px;
+  margin:0 auto;
+  background:var(--cream);
+  min-height:100vh;
+  position:relative;
+  box-shadow:0 0 60px rgba(0,0,0,.08);
+  transition:background .25s;
+}
+@media(min-width:820px){
+  body{padding-top:24px;padding-bottom:24px}
+  .app-shell{border-radius:16px;min-height:calc(100vh - 48px);overflow:hidden}
+}
+.wrap{width:100%;padding:0 15px 24px}
 .page{display:none}.page.active{display:block}
 .sec-hd{display:flex;align-items:center;gap:10px;padding:20px 0 14px}
 .sec-en{font-size:11px;letter-spacing:1.5px;color:var(--ink3);white-space:nowrap;font-weight:600}
@@ -152,6 +182,16 @@ body.dark select option{background:var(--paper);color:var(--ink)}
 .btn:active{opacity:.75}
 .btn-ghost{background:transparent;color:var(--ink2);border:1px solid var(--line);margin-top:6px}
 .fl-lbl{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--ink3);margin-bottom:6px;text-transform:uppercase}
+/* Split mode toggle */
+.split-mode-row{display:flex;gap:6px;margin-bottom:10px}
+.smode-btn{flex:1;padding:8px 6px;border:1px solid var(--line);border-radius:7px;background:var(--cream);font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;transition:.15s;text-align:center}
+.smode-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+/* Ratio rows */
+.ratio-rows{display:flex;flex-direction:column;gap:6px;margin-bottom:4px}
+.ratio-row{display:flex;align-items:center;gap:10px}
+.ratio-name{font-size:13px;font-weight:700;width:48px;flex-shrink:0}
+.ratio-row input{flex:1;margin:0}
+.su-text{color:var(--una)}.sd-text{color:var(--doris)}.se-text{color:var(--eagle)}
 /* Split row — dark-mode aware */
 .split-row{display:flex;gap:6px;margin-bottom:10px}
 .split-row label{flex:1;text-align:center;padding:8px 4px;border-radius:7px;border:1px solid var(--line);cursor:pointer;font-size:13px;font-weight:700;color:var(--ink3);transition:.15s;user-select:none;background:var(--cream)}
@@ -190,7 +230,7 @@ body.dark select option{background:var(--paper);color:var(--ink)}
 .sum-total span{font-size:12px;color:var(--ink3);font-weight:400;margin-left:8px}
 .sum-row{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-bottom:1px solid var(--line);font-size:14px}
 .sum-row:last-child{border-bottom:none}
-.pos{color:#2a7a55;font-weight:700}.neg{color:var(--rust);font-weight:700}.neu{color:var(--ink3)}
+.pos{color:#4a9a30;font-weight:700}.neg{color:var(--rust);font-weight:700}.neu{color:var(--ink3)}
 .chart-wrap{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:16px}
 .chart-hed{font-size:13px;font-weight:700;color:var(--ink3);margin-bottom:12px}
 .chart-lbl{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:5px;color:var(--ink2)}
@@ -207,7 +247,7 @@ body.dark select option{background:var(--paper);color:var(--ink)}
 .ntag{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700;color:#fff;min-width:46px;text-align:center}
 .map-link{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink2);font-size:13px;margin-bottom:8px}
 /* ── TAB BAR ── */
-.tabbar{position:fixed;bottom:0;left:0;right:0;background:rgba(250,248,244,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 max(12px,env(safe-area-inset-bottom));z-index:100;transition:background .25s}
+.tabbar{position:sticky;bottom:0;background:rgba(250,248,244,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 max(12px,env(safe-area-inset-bottom));z-index:100;transition:background .25s;margin-top:auto}
 body.dark .tabbar{background:rgba(24,23,26,.96)}
 .tabbtn{background:none;border:none;font-family:'Noto Sans TC',sans-serif;font-size:11px;font-weight:500;color:var(--ink3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:0 10px;letter-spacing:.3px;transition:color .15s}
 .tabbtn .ic{font-size:22px}
@@ -226,6 +266,7 @@ body.dark .tabbar{background:rgba(24,23,26,.96)}
 </style>
 </head>
 <body>
+<div class="app-shell">
 
 <!-- HEADER -->
 <div class="site-header">
@@ -477,13 +518,31 @@ body.dark .tabbar{background:rgba(24,23,26,.96)}
       <option value="Doris">Doris 先代墊</option>
       <option value="Eagle">Eagle 先代墊</option>
     </select>
-    <div class="fl-lbl">分給誰</div>
-    <div class="split-row">
-      <label id="salb-Una" class="su"><input type="checkbox" id="sasp-Una" checked onchange="updSaSp('Una')">Una</label>
-      <label id="salb-Doris" class="sd"><input type="checkbox" id="sasp-Doris" checked onchange="updSaSp('Doris')">Doris</label>
-      <label id="salb-Eagle" class="se"><input type="checkbox" id="sasp-Eagle" checked onchange="updSaSp('Eagle')">Eagle</label>
+    <div class="fl-lbl">分帳方式</div>
+    <div class="split-mode-row">
+      <button class="smode-btn active" id="smode-equal" onclick="setSaMode('equal',this)">均分</button>
+      <button class="smode-btn" id="smode-ratio" onclick="setSaMode('ratio',this)">按比例（天數／份數）</button>
     </div>
-    <button onclick="addSaExp()" class="btn">記帳</button>
+    <!-- 均分模式 -->
+    <div id="sa-equal-wrap">
+      <div class="fl-lbl" style="margin-top:8px">分給誰</div>
+      <div class="split-row">
+        <label id="salb-Una" class="su"><input type="checkbox" id="sasp-Una" checked onchange="updSaSp('Una')">Una</label>
+        <label id="salb-Doris" class="sd"><input type="checkbox" id="sasp-Doris" checked onchange="updSaSp('Doris')">Doris</label>
+        <label id="salb-Eagle" class="se"><input type="checkbox" id="sasp-Eagle" checked onchange="updSaSp('Eagle')">Eagle</label>
+      </div>
+    </div>
+    <!-- 比例模式 -->
+    <div id="sa-ratio-wrap" style="display:none">
+      <div style="font-size:12px;color:var(--ink3);margin:6px 0 10px">填入每人的天數或份數，留空代表不參與</div>
+      <div class="ratio-rows">
+        <div class="ratio-row"><span class="ratio-name su-text">Una</span><input type="number" id="ratio-Una" placeholder="0" min="0" step="0.5" inputmode="decimal" oninput="previewRatio()"></div>
+        <div class="ratio-row"><span class="ratio-name sd-text">Doris</span><input type="number" id="ratio-Doris" placeholder="0" min="0" step="0.5" inputmode="decimal" oninput="previewRatio()"></div>
+        <div class="ratio-row"><span class="ratio-name se-text">Eagle</span><input type="number" id="ratio-Eagle" placeholder="0" min="0" step="0.5" inputmode="decimal" oninput="previewRatio()"></div>
+      </div>
+      <div id="ratio-preview" style="font-size:12px;color:var(--sage);margin-top:6px;min-height:18px"></div>
+    </div>
+    <button onclick="addSaExp()" class="btn" style="margin-top:10px">記帳</button>
   </div>
 
   <div class="sec-hd"><span class="sec-en">rate</span><span class="sec-rule"></span><span class="sec-zh">匯率設定</span></div>
@@ -575,7 +634,7 @@ body.dark .tabbar{background:rgba(24,23,26,.96)}
 </div>
 
 <!-- FAB - quick expense shortcut when on schedule page -->
-<button id="fab" style="position:fixed;bottom:84px;right:18px;z-index:90;width:50px;height:50px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:21px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,0,0,.25);transition:transform .15s" onclick="openQexp()">💸</button>
+<button id="fab" style="position:fixed;bottom:84px;right:max(18px,calc(50% - 372px));z-index:90;width:50px;height:50px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:21px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,0,0,.25);transition:transform .15s" onclick="openQexp()">💸</button>
 
 <!-- TAB BAR -->
 <div class="tabbar">
@@ -946,7 +1005,26 @@ function toKrw(amt,cur){
 }
 
 // Standalone expense form
-let saCur='krw';
+let saCur='krw', saMode='equal';
+function setSaMode(mode,btn){
+  saMode=mode;
+  document.querySelectorAll('.smode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sa-equal-wrap').style.display=mode==='equal'?'block':'none';
+  document.getElementById('sa-ratio-wrap').style.display=mode==='ratio'?'block':'none';
+  if(mode==='ratio') previewRatio();
+}
+function previewRatio(){
+  const names=['Una','Doris','Eagle'];
+  const vals=names.map(n=>parseFloat(document.getElementById('ratio-'+n).value)||0);
+  const total=vals.reduce((a,b)=>a+b,0);
+  const rawAmt=parseInt(document.getElementById('sa-amt').value)||0;
+  if(!total){document.getElementById('ratio-preview').textContent='';return;}
+  const amtKrw=saCur==='krw'?rawAmt:Math.round(rawAmt*(parseFloat(document.getElementById('rate').value)||0));
+  let preview=names.map((n,i)=>vals[i]>0?`${n}：₩${Math.round(amtKrw*vals[i]/total).toLocaleString()}`:null).filter(Boolean).join('　');
+  document.getElementById('ratio-preview').textContent=preview?'預覽：'+preview:'';
+}
+
 function setSaCur(cur,btn){
   saCur=cur;
   document.querySelectorAll('#sa-cur-krw,#sa-cur-twd').forEach(b=>b.classList.remove('active'));
@@ -963,15 +1041,26 @@ function addSaExp(){
   const amt=toKrw(raw,saCur);
   if(amt===null)return;
   const payer=document.getElementById('sa-payer').value;
-  const sw=['Una','Doris','Eagle'].filter(x=>document.getElementById('sasp-'+x).checked);
   if(!name){alert('請輸入消費項目！');return}
   if(!amt||amt<=0){alert('請輸入金額！');return}
-  if(!sw.length){alert('請選擇分帳對象！');return}
-  exps.push({name,amount:amt,payer,splitWith:sw,id:Date.now()});
+  let splitWith,ratios=null;
+  if(saMode==='equal'){
+    splitWith=['Una','Doris','Eagle'].filter(x=>document.getElementById('sasp-'+x).checked);
+    if(!splitWith.length){alert('請選擇分帳對象！');return}
+  } else {
+    const names=['Una','Doris','Eagle'];
+    const vals=names.map(n=>parseFloat(document.getElementById('ratio-'+n).value)||0);
+    const total=vals.reduce((a,b)=>a+b,0);
+    if(!total){alert('請填入至少一人的天數／份數！');return}
+    splitWith=names.filter((_,i)=>vals[i]>0);
+    ratios={};names.forEach((n,i)=>{if(vals[i]>0)ratios[n]=vals[i];});
+  }
+  exps.push({name,amount:amt,payer,splitWith,ratios,id:Date.now()});
   sv('seoul_exps',exps);renderExps();
   document.getElementById('sa-name').value='';
   document.getElementById('sa-amt').value='';
-  // flash feedback
+  if(saMode==='ratio')['Una','Doris','Eagle'].forEach(n=>{document.getElementById('ratio-'+n).value='';});
+  document.getElementById('ratio-preview').textContent='';
   const btn=document.querySelector('#page-expenses .btn');
   const orig=btn.textContent;btn.textContent='✓ 已記帳';
   setTimeout(()=>btn.textContent=orig,1200);
@@ -1036,12 +1125,27 @@ function renderExps(){
   let total=0,lh='';
   exps.forEach(e=>{
     const sw=e.splitWith||['Una','Doris','Eagle'];
-    const sh=Math.round(e.amount/sw.length);
     const tw=toTwd(e.amount);
+    let metaStr,shareMap={};
+    if(e.ratios){
+      // 比例分帳
+      const totalR=Object.values(e.ratios).reduce((a,b)=>a+b,0);
+      sw.forEach(p=>{shareMap[p]=Math.round(e.amount*e.ratios[p]/totalR);});
+      // rounding adjustment
+      const diff=e.amount-Object.values(shareMap).reduce((a,b)=>a+b,0);
+      if(diff&&sw.length)shareMap[sw[0]]+=diff;
+      metaStr=sw.map(p=>`${p} ×${e.ratios[p]}份 ₩${shareMap[p].toLocaleString()}`).join('　');
+    } else {
+      const sh=Math.round(e.amount/sw.length);
+      sw.forEach(p=>{shareMap[p]=sh;});
+      const diff=e.amount-sh*sw.length;
+      if(diff&&sw.length)shareMap[sw[0]]+=diff;
+      metaStr='分帳：'+sw.join(' / ')+' · 每人 ₩'+sh.toLocaleString();
+    }
     lh+=`<div class="exp-row">
-      <div>
+      <div style="min-width:0;flex:1">
         <div class="exp-name">${e.name}<span class="exp-who">${e.payer}</span></div>
-        <div class="exp-meta">分帳：${sw.join(' / ')} · 每人 ₩${sh.toLocaleString()}</div>
+        <div class="exp-meta">${metaStr}</div>
       </div>
       <div class="exp-r">
         <div class="exp-amt">₩${e.amount.toLocaleString()} <span class="del" onclick="delExp(${e.id})">✖</span></div>
@@ -1049,7 +1153,7 @@ function renderExps(){
       </div>
     </div>`;
     paid[e.payer]+=e.amount;
-    sw.forEach(p=>owed[p]+=sh);
+    sw.forEach(p=>owed[p]+=shareMap[p]||0);
     total+=e.amount;
   });
   le.innerHTML=lh;
@@ -1106,5 +1210,6 @@ async function init() {
 }
 init();
 </script>
+</div><!-- /app-shell -->
 </body>
 </html>
