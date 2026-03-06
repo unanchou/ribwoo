@@ -649,8 +649,6 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
   </div>
 </div>
 
-<!-- FAB - quick expense shortcut when on schedule page -->
-<button id="fab" style="position:fixed;bottom:84px;right:max(18px,calc(50% - 310px));z-index:90;width:50px;height:50px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:21px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,0,0,.25);transition:transform .15s" onclick="openQexp()">💸</button>
 
 <script>
 // ══════════════════════════════════════════
@@ -792,7 +790,7 @@ function swTab(id,btn){
   document.getElementById('page-'+id).classList.add('active');
   btn.classList.add('active');
   // Show FAB only on schedule tab
-  document.getElementById('fab').style.display=id==='schedule'?'flex':'none';
+  
   if(id==='seats')renderSeats();
 }
 // ── TIMELINE ──
@@ -1114,8 +1112,6 @@ function submitQexp(){
   document.getElementById('q-cur-krw').classList.add('active');
   document.getElementById('q-cur-twd').classList.remove('active');
   closeQexp();
-  const fab=document.getElementById('fab');fab.textContent='✓';
-  setTimeout(()=>fab.textContent='💸',1500);
 }
 
 function delExp(id){exps=exps.filter(e=>e.id!==id);sv('seoul_exps',exps);renderExps()}
