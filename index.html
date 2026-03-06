@@ -388,7 +388,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
           <div class="tl-body">
             <div class="tl-cat">入住</div>
             <div class="tl-title">Una &amp; Eagle 入住</div>
-            <div class="tl-desc">搭 AREX 至弘大入口站 1 號出口步行前往。</div>
+            <div class="tl-desc">搭 AREX 至弘大入口站步行前往（約 40 分鐘）。</div>
             <div class="acc-card">
               <div class="acc-top"><div class="acc-icon">🏠</div><div><div class="acc-name">麻浦區住所</div><div class="acc-en">World Cup buk-ro 6-gil · Mapo-gu</div></div></div>
               <div class="acc-addr"><div>19-6, World Cup buk-ro 6-gil, Mapo-gu, Seoul</div><div style="color:var(--ink3);margin-top:2px">首爾特別市麻浦區連南洞 570-35</div></div>
@@ -576,6 +576,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
   <div class="sec-hd"><span class="sec-en">log</span><span class="sec-rule"></span><span class="sec-zh">消費紀錄</span></div>
   <div class="exp-wrap" id="exp-wrap"><div id="exp-list"></div></div>
   <div class="sum-wrap" id="sum-wrap" style="display:none"><div class="sum-total" id="sum-total"></div><div id="sum-rows"></div></div>
+  <div class="sum-wrap" id="settle-wrap" style="display:none"><div class="sum-total">結清方式</div><div id="settle-rows"></div></div>
   <div class="chart-wrap" id="chart-wrap" style="display:none"><div class="chart-hed">各人已代墊</div><div id="chart-inner"></div></div>
 </div><!-- /page-expenses -->
 
@@ -1278,6 +1279,38 @@ function renderExps(){
     else rh+=`<div class="sum-row"><span>${p}</span><span class="neu">無須補退</span></div>`;
   });
   sr.innerHTML=rh;sw_.style.display='block';
+
+  // ── 結清方式（最少轉帳筆數）──
+  const settle=document.getElementById('settle-wrap');
+  const settleRows=document.getElementById('settle-rows');
+  // 計算每人淨額
+  const bal={Una:paid.Una-owed.Una, Doris:paid.Doris-owed.Doris, Eagle:paid.Eagle-owed.Eagle};
+  // 分成債主（正）和債務人（負）
+  const creditors=Object.entries(bal).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const debtors=Object.entries(bal).filter(([,v])=>v<0).sort((a,b)=>a[1]-b[1]);
+  if(!creditors.length){settle.style.display='none';}
+  else{
+    let sh='';
+    const cred=creditors.map(([n,v])=>({n,v}));
+    const debt=debtors.map(([n,v])=>({n,v:-v}));
+    let ci=0,di=0;
+    while(ci<cred.length&&di<debt.length){
+      const amt=Math.min(cred[ci].v,debt[di].v);
+      if(amt>0){
+        const tw=toTwd(amt);
+        sh+=`<div class="sum-row">
+          <span><b>${debt[di].n}</b> 轉給 <b>${cred[ci].n}</b></span>
+          <span class="neg">₩${amt.toLocaleString()}${tw?` <span style="font-size:11px;color:var(--ink3)">≈NT$${tw.toLocaleString()}</span>`:''}
+          </span></div>`;
+        cred[ci].v-=amt;
+        debt[di].v-=amt;
+      }
+      if(cred[ci].v<1)ci++;
+      if(debt[di].v<1)di++;
+    }
+    settleRows.innerHTML=sh||'<div class="sum-row"><span class="neu">已結清，無需轉帳</span></div>';
+    settle.style.display='block';
+  }
   const mx=Math.max(...Object.values(paid),1);
   let ch='';
   ['Una','Doris','Eagle'].forEach(p=>{
