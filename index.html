@@ -890,12 +890,28 @@ function applyBuiltinEdit(eid) {
   if (timeEl && e.time) timeEl.textContent = e.time;
   if (ampEl && e.tz) ampEl.textContent = e.tz;
   if (titleEl && e.title) titleEl.textContent = e.title;
-  if (descEl !== null && e.desc !== undefined) {
-    if (descEl) descEl.textContent = e.desc;
-  }
+  if (descEl && e.desc !== undefined) descEl.textContent = e.desc;
+  // 重新排列這一天的行程順序
+  const panel = item.closest('.tl-panel');
+  if (panel) reorderPanel(panel);
 }
 function applyAllBuiltinEdits() {
   Object.keys(builtinEdits).forEach(applyBuiltinEdit);
+  // 全部套用完再統一排序
+  document.querySelectorAll('.tl-panel').forEach(reorderPanel);
+}
+function reorderPanel(panel) {
+  const items = [...panel.querySelectorAll('.tl-item')];
+  items.sort((a, b) => {
+    const ta = getItemMins(a), tb = getItemMins(b);
+    return ta - tb;
+  });
+  items.forEach(el => panel.appendChild(el));
+}
+function getItemMins(item) {
+  const t = item.querySelector('.tl-time');
+  if (!t) return 9999;
+  return toMins(t.textContent.trim());
 }
 document.getElementById('builtin-edit-modal').addEventListener('click', function(e) {
   if (e.target === this) closeBuiltinEdit();
