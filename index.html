@@ -330,7 +330,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 <!-- ═══ PAGE: SCHEDULE ═══ -->
 <div id="page-schedule" class="page active">
   <div class="sec-hd"><span class="sec-en">itinerary</span><span class="sec-rule"></span><span class="sec-zh">行程時間表</span></div>
-  <div class="tl">
+  <div class="tl" id="tl-root">
 
     <!-- 3/20 -->
     <div class="tl-day open" id="d0320">
@@ -383,12 +383,12 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
           <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi3',this)">✏ 修改</button></div></div>
         </div>
         <div class="tl-item">
-          <div class="tl-tc" data-eid="bi4"><span class="tl-time">23:30</span><span class="tl-ampm">KST</span></div>
+          <div class="tl-tc" data-eid="bi4"><span class="tl-time">21:00</span><span class="tl-ampm">KST</span></div>
           <div class="tl-gap"></div>
           <div class="tl-body">
             <div class="tl-cat">入住</div>
             <div class="tl-title">Una &amp; Eagle 入住</div>
-            <div class="tl-desc">搭 AREX 至弘大入口站 3 號出口步行前往。</div>
+            <div class="tl-desc">搭 AREX 至弘大入口站步行前往（約 40 分鐘）。</div>
             <div class="acc-card">
               <div class="acc-top"><div class="acc-icon">🏠</div><div><div class="acc-name">麻浦區住所</div><div class="acc-en">World Cup buk-ro 6-gil · Mapo-gu</div></div></div>
               <div class="acc-addr"><div>19-6, World Cup buk-ro 6-gil, Mapo-gu, Seoul</div><div style="color:var(--ink3);margin-top:2px">首爾特別市麻浦區連南洞 570-35</div></div>
@@ -1292,26 +1292,21 @@ function renderExps(){
 async function init() {
   setSync('loading');
 
-  // 載入匯率
-  const rate = await dbGet('seoul_rate');
-  if (rate !== null) {
-    document.getElementById('rate').value = rate;
-  }
-
-  // 載入自訂行程
-  const savedSchs = await dbGet('seoul_schs');
-  if (savedSchs) schs = savedSchs;
-
-  // 載入消費
-  const savedExps = await dbGet('seoul_exps');
-  if (savedExps) exps = savedExps;
-
-  // 載入內建行程修改
+  // ① 最優先：內建行程修改（最快套用，避免閃爍）
   const savedBuiltin = await dbGet('seoul_builtin_edits');
   if (savedBuiltin) { builtinEdits = savedBuiltin; applyAllBuiltinEdits(); }
 
-  // 載入座位覆蓋
-  const savedSeats = await dbGet('seoul_seats');
+  // ② 並行載入其他資料
+  const [rate, savedSchs, savedExps, savedSeats] = await Promise.all([
+    dbGet('seoul_rate'),
+    dbGet('seoul_schs'),
+    dbGet('seoul_exps'),
+    dbGet('seoul_seats'),
+  ]);
+
+  if (rate !== null) document.getElementById('rate').value = rate;
+  if (savedSchs) schs = savedSchs;
+  if (savedExps) exps = savedExps;
   if (savedSeats) Object.assign(seatOverrides, savedSeats);
 
   setSync('ok');
