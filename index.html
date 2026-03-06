@@ -73,12 +73,12 @@ body{
 .npill{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--ink2)}
 .ndot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 /* ── COUNTDOWN ── */
-.timer-strip{background:var(--ink);padding:11px 16px 10px;width:100%;box-sizing:border-box;border-bottom:1px solid var(--sage-dk)}
+.timer-strip{background:#2a1e0a;padding:11px 16px 10px;width:100%;box-sizing:border-box;border-bottom:2px solid var(--sage)}
 .timer-main{display:flex;align-items:center;gap:10px}
-.t-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.55);flex-shrink:0;font-weight:600}
-#timer{font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;letter-spacing:1px;flex:1;font-weight:600}
-#tlabel{font-size:13px;letter-spacing:.5px;color:rgba(255,255,255,.7);flex-shrink:0;font-weight:600}
-#next-event-bar{font-size:12px;color:rgba(255,255,255,.55);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6);flex-shrink:0;font-weight:600}
+#timer{font-family:'Cormorant Garamond',serif;font-size:26px;color:#f0d890;letter-spacing:1px;flex:1;font-weight:600}
+#tlabel{font-size:13px;letter-spacing:.5px;color:rgba(255,255,255,.85);flex-shrink:0;font-weight:600}
+#next-event-bar{font-size:12px;color:rgba(255,220,140,.7);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* ── LAYOUT ── */
 /* 手機全寬，桌面置中 480px */
 .app-shell{
@@ -239,13 +239,13 @@ body.dark select option{background:var(--paper);color:var(--ink)}
 .fu{background:var(--una)}.fd{background:var(--doris)}.fe{background:var(--eagle)}
 /* ── SEATS ── */
 .stabs{display:flex;gap:6px;margin-bottom:14px}
-.stab{flex:1;padding:9px 4px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:500;color:var(--ink2);cursor:pointer;text-align:center;line-height:1.4;transition:.15s}
-.stab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.stab{flex:1;padding:9px 4px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;text-align:center;line-height:1.4;transition:.15s}
+.stab.active{background:var(--sage);color:#fff;border-color:var(--sage)}
 .spanel{display:none}.spanel.active{display:block}
-.seat-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}
+.seat-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px;font-weight:500;color:var(--ink)}
 .seat-row:last-child{border-bottom:none}
 .ntag{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700;color:#fff;min-width:46px;text-align:center}
-.map-link{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink2);font-size:13px;margin-bottom:8px}
+.map-link{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink);font-size:13px;margin-bottom:8px;font-weight:500}
 /* ── TAB BAR ── */
 /* ── TAB BAR：固定底部 ── */
 .tabbar{
@@ -829,7 +829,7 @@ const SEAT_SHOWS=[
   {label:'3/22 14:00 最終場', people:[
     {name:'Una',  color:'una',   seat:'1F · A · Row 4 · Seat 6'},
     {name:'Eagle',color:'eagle', seat:'2F · P2 · Row 2 · Seat 26'},
-    {name:'Doris',color:'doris', seat:'2F · O2 · Row 6 · Seat 83'},
+    {name:'Doris',color:'doris', seat:'1F · C · Row 1'},
   ]},
 ];
 // Load saved overrides from localStorage
