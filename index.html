@@ -26,22 +26,22 @@
   --doris:#9e5238;--doris-lt:#f5e8e2;
 }
 body.dark{
-  /* ── 海報深夜金系 · 深色模式 ── */
-  --bg-outer:#0a0804;
-  --cream:#1a1408;        /* 深棕底 */
-  --paper:#231a0c;        /* 略亮的深棕紙 */
-  --sage:#c8963e;         /* 暖金色 */
-  --sage-lt:#2a1e08;      /* 深金底 */
-  --sage-dk:#e8b84a;      /* 亮金 */
-  --ink:#f0e6d0;          /* 象牙白字 */
-  --ink2:#c8a878;         /* 暖米字 */
-  --ink3:#7a6040;         /* 深灰棕 */
-  --rust:#d4825a;
-  --rust-lt:#3a1c08;
-  --line:#3a2c14;         /* 深金線 */
+  /* ── 海報深夜金系 · 深色模式（調亮版）── */
+  --bg-outer:#1c1508;
+  --cream:#2e2210;        /* 深棕底，比原本亮很多 */
+  --paper:#3a2c16;        /* 卡片底色 */
+  --sage:#d4a044;         /* 暖金色稍亮 */
+  --sage-lt:#3a2c10;
+  --sage-dk:#eec84a;
+  --ink:#f4ead8;          /* 象牙白字 */
+  --ink2:#d4b888;         /* 暖米字 */
+  --ink3:#9a7e54;         /* 次要文字 */
+  --rust:#e08855;
+  --rust-lt:#4a2410;
+  --line:#5a4020;         /* 線條也調亮 */
   --una:#9b8fd8;--una-lt:#2a2640;
   --eagle:#5da8d8;--eagle-lt:#1a2e3c;
-  --doris:#d07855;--doris-lt:#3c2018;
+  --doris:#d07855;--doris-lt:#4a2818;
 }
 /* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -247,11 +247,19 @@ body.dark select option{background:var(--paper);color:var(--ink)}
 .ntag{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700;color:#fff;min-width:46px;text-align:center}
 .map-link{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink2);font-size:13px;margin-bottom:8px}
 /* ── TAB BAR ── */
-.tabbar{position:sticky;bottom:0;background:rgba(250,248,244,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 max(12px,env(safe-area-inset-bottom));z-index:100;transition:background .25s;margin-top:auto}
-body.dark .tabbar{background:rgba(24,23,26,.96)}
+/* ── TAB BAR：固定底部 ── */
+.tabbar{
+  position:sticky;bottom:0;
+  background:rgba(245,237,224,.96);backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);
+  display:flex;justify-content:space-around;
+  padding:8px 0 max(12px,env(safe-area-inset-bottom));
+  z-index:100;transition:background .25s;
+}
+body.dark .tabbar{background:rgba(46,34,16,.96)}
 .tabbtn{background:none;border:none;font-family:'Noto Sans TC',sans-serif;font-size:11px;font-weight:500;color:var(--ink3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:0 10px;letter-spacing:.3px;transition:color .15s}
 .tabbtn .ic{font-size:22px}
-.tabbtn.active{color:var(--ink)}
+.tabbtn.active{color:var(--sage)}
 /* ── MODALS ── */
 .mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:flex-end;justify-content:center}
 .mbg.on{display:flex}
@@ -267,6 +275,14 @@ body.dark .tabbar{background:rgba(24,23,26,.96)}
 </head>
 <body>
 <div class="app-shell">
+<!-- TAB BAR -->
+<div class="tabbar">
+  <button class="tabbtn active" onclick="swTab('schedule',this)"><span class="ic">📍</span>行程</button>
+  <button class="tabbtn" onclick="swTab('expenses',this)"><span class="ic">💰</span>記帳</button>
+  <button class="tabbtn" onclick="swTab('seats',this)"><span class="ic">🎫</span>座位</button>
+</div>
+
+
 
 <!-- HEADER -->
 <div class="site-header">
@@ -634,14 +650,7 @@ body.dark .tabbar{background:rgba(24,23,26,.96)}
 </div>
 
 <!-- FAB - quick expense shortcut when on schedule page -->
-<button id="fab" style="position:fixed;bottom:84px;right:max(18px,calc(50% - 372px));z-index:90;width:50px;height:50px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:21px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,0,0,.25);transition:transform .15s" onclick="openQexp()">💸</button>
-
-<!-- TAB BAR -->
-<div class="tabbar">
-  <button class="tabbtn active" onclick="swTab('schedule',this)"><span class="ic">📍</span>行程</button>
-  <button class="tabbtn" onclick="swTab('expenses',this)"><span class="ic">💰</span>記帳</button>
-  <button class="tabbtn" onclick="swTab('seats',this)"><span class="ic">🎫</span>座位</button>
-</div>
+<button id="fab" style="position:fixed;bottom:84px;right:max(18px,calc(50% - 310px));z-index:90;width:50px;height:50px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:21px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,0,0,.25);transition:transform .15s" onclick="openQexp()">💸</button>
 
 <script>
 // ══════════════════════════════════════════
