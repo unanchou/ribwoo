@@ -732,62 +732,48 @@ function setSync(state) {
   el.title = tip[state] || '';
 }
 
-async function dbGet(key) {
-  try {
-    const r = await fetch(`${SB_URL}/rest/v1/store?key=eq.${key}&select=value`, {
-      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
-    });
-    const data = await r.json();
+function dbGet(key) {
+  return fetch(SB_URL+'/rest/v1/store?key=eq.'+key+'&select=value', {
+    headers: { apikey: SB_KEY, Authorization: 'Bearer '+SB_KEY }
+  }).then(function(r){ return r.json(); }).then(function(data){
     return data && data[0] ? JSON.parse(data[0].value) : null;
-  } catch(e) { return null; }
+  }).catch(function(){ return null; });
 }
 
-async function dbSet(key, value) {
+function dbSet(key, value) {
   setSync('saving');
-  try {
-    await fetch(`${SB_URL}/rest/v1/store`, {
-      method: 'POST',
-      headers: {
-        apikey: SB_KEY,
-        Authorization: `Bearer ${SB_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'resolution=merge-duplicates'
-      },
-      body: JSON.stringify({ key, value: JSON.stringify(value) })
-    });
-    setSync('ok');
-  } catch(e) { setSync('error'); }
+  return fetch(SB_URL+'/rest/v1/store', {
+    method: 'POST',
+    headers: {
+      apikey: SB_KEY,
+      Authorization: 'Bearer '+SB_KEY,
+      'Content-Type': 'application/json',
+      Prefer: 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify({ key: key, value: JSON.stringify(value) })
+  }).then(function(){ setSync('ok'); }).catch(function(){ setSync('error'); });
 }
 
 // 即時同步：每 5 秒 polling，偵測到變更就更新
 let _lastSnapshot = {};
-async function pollSync() {
-  try {
-    const r = await fetch(`${SB_URL}/rest/v1/store?select=key,value`, {
-      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` }
-    });
-    const rows = await r.json();
+function pollSync() {
+  fetch(SB_URL+'/rest/v1/store?select=key,value', {
+    headers: { apikey: SB_KEY, Authorization: 'Bearer '+SB_KEY }
+  }).then(function(r){ return r.json(); }).then(function(rows){
     if (!Array.isArray(rows)) return;
-    let changed = false;
-    rows.forEach(row => {
+    rows.forEach(function(row) {
       if (_lastSnapshot[row.key] === row.value) return;
       _lastSnapshot[row.key] = row.value;
-      changed = true;
       try {
-        const val = JSON.parse(row.value);
+        var val = JSON.parse(row.value);
         if (row.key === 'seoul_schs') { schs = val; renderSchs(); }
         if (row.key === 'seoul_exps') { exps = val; renderExps(); }
         if (row.key === 'seoul_seats') { Object.assign(seatOverrides, val); renderSeats(); }
         if (row.key === 'seoul_builtin_edits') { builtinEdits = val; applyAllBuiltinEdits(); }
         if (row.key === 'seoul_notes') { notes = val; renderNotes(); }
-        if (row.key === 'seoul_rate') {
-          document.getElementById('rate').value = val;
-          renderExps();
-        }
       } catch(e) {}
     });
-    if (changed) setSync('ok');
-  } catch(e) { setSync('error'); }
+  }).catch(function(){});
 }
 function subscribeRealtime() {
   setInterval(pollSync, 5000);
@@ -830,7 +816,7 @@ const T_END   =new Date('2026-03-22T17:00:00+09:00').getTime();
 function pad(n){return String(n).padStart(2,'0')}
 function fmtMs(ms){
   const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
-  return d>0?`${d}d ${pad(h)}:${pad(m)}:${pad(s)}`:`${pad(h)}:${pad(m)}:${pad(s)}`;
+  return d>0?d+'d '+pad(h)+':'+pad(m)+':'+pad(s):pad(h)+':'+pad(m)+':'+pad(s);
 }
 function tick(){
   const now=Date.now(),t=document.getElementById('timer'),l=document.getElementById('tlabel');
@@ -844,7 +830,7 @@ function renderNextEvent(){
   const next=EVENTS.find(e=>e.ts>now);
   if(!next||next.ts-now>7*864e5){bar.textContent='';return;}
   const diff=next.ts-now,h=Math.floor(diff/36e5),m=Math.floor(diff%36e5/6e4);
-  bar.textContent=`⏱ 距「${next.label}」還有${h>0?' '+h+'h':''}${h>0&&m>0?' ':''}${m>0?m+'m':'剛好'}`;
+  bar.textContent='⏱ 距「'+next.label+'」還有'+(h>0?' '+h+'h':'')+(h>0&&m>0?' ':'')+(m>0?m+'m':'剛好');
 }
 setInterval(tick,1000);tick();
 setInterval(renderNextEvent,30000);renderNextEvent();
@@ -967,24 +953,24 @@ function renderNotes() {
     notes = [{id: Date.now(), title: '備忘 1', body: ''}];
   }
 
-  tabsEl.innerHTML = notes.map((n, i) => `
-    <button class="notes-tab${i===noteCurIdx?' active':''}" onclick="switchNote(${i})">
-      ${n.title||'備忘 '+(i+1)}
-      <span class="notes-tab-del" onclick="delNoteTab(event,${i})">✕</span>
-    </button>`).join('');
+  tabsEl.innerHTML = notes.map(function(n,i){
+    return '<button class="notes-tab'+(i===noteCurIdx?' active':'')+'" data-ni="'+i+'" onclick="switchNote(+this.dataset.ni)">'+
+      (n.title||'備忘 '+(i+1))+
+      '<span class="notes-tab-del" data-ni="'+i+'" onclick="delNoteTab(event,+this.dataset.ni)">✕</span>'+
+    '</button>';
+  }).join('');
 
-  panelsEl.innerHTML = notes.map((n, i) => `
-    <div class="notes-panel${i===noteCurIdx?' active':''}" id="np${i}">
-      <input class="notes-title-input" placeholder="頁面標題" value="${escHtml(n.title)}"
-        oninput="noteInput(${i},'title',this.value)">
-      <textarea class="notes-body" placeholder="在這裡記下任何事情…"
-        oninput="noteInput(${i},'body',this.value)">${escHtml(n.body)}</textarea>
+  panelsEl.innerHTML = notes.map(function(n,i){
+    return '<div class="notes-panel'+(i===noteCurIdx?' active':'')+'" id="np'+i+'">'+
+      '<input class="notes-title-input" placeholder="頁面標題" value="'+escHtml(n.title)+'" data-ni="'+i+'" data-field="title" oninput="noteInput(+this.dataset.ni,this.dataset.field,this.value)">'+
+      '<textarea class="notes-body" placeholder="在這裡記下任何事情…" data-ni="'+i+'" data-field="body" oninput="noteInput(+this.dataset.ni,this.dataset.field,this.value)">'+escHtml(n.body)+'</textarea>'+
 
 ```
-  <div class="notes-footer" id="nf${i}"></div>
-</div>`).join('');
+  '<div class="notes-footer" id="nf'+i+'"></div>'+
+'</div>';
 ```
 
+}).join(’’);
 }
 
 function escHtml(s) {
@@ -1065,7 +1051,11 @@ const si=curShowIdx;
 const show=SEAT_SHOWS[si];
 let html=’<div style="background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px 15px;margin-bottom:10px">’;
 show.people.forEach((p,pi)=>{
-html+=`<div class="seat-row"> <span class="ntag" style="background:var(--${p.color})">${p.name}</span> <span style="flex:1">${getSeat(si,pi)}</span> <button class="tl-btn" onclick="openSeatModal(${si},${pi})" style="flex-shrink:0;margin-left:8px">✏</button> </div>`;
+html+=’<div class="seat-row">’+
+‘<span class="ntag" style="background:var(--'+p.color+')">’+p.name+’</span>’+
+‘<span style="flex:1">’+getSeat(si,pi)+’</span>’+
+‘<button class="tl-btn" data-si="'+si+'" data-pi="'+pi+'" onclick="openSeatModal(+this.dataset.si,+this.dataset.pi)" style="flex-shrink:0;margin-left:8px">✏</button>’+
+‘</div>’;
 });
 html+=’</div>’;
 document.getElementById(‘seats-list’).innerHTML=html;
@@ -1160,7 +1150,16 @@ schs.forEach(s=>{
 const dayId=DATE_TO_DAY[s.date];
 const el=document.createElement(‘div’);
 el.className=‘tl-item tl-item-custom’;
-el.innerHTML=` <div class="tl-tc"><span class="tl-time">${s.time}</span></div> <div class="tl-gap"></div> <div class="tl-body"> <div class="tl-cat">自訂</div> <div class="tl-title">${s.desc}</div> <div class="tl-acts"> <button class="tl-btn" onclick="openEdit(${s.id})">✏ 修改</button> <button class="tl-btn" onclick="delSch(${s.id})" style="color:var(--rust)">✖ 刪除</button> </div> </div>`;
+el.innerHTML=’<div class="tl-tc"><span class="tl-time">’+s.time+’</span></div>’+
+‘<div class="tl-gap"></div>’+
+‘<div class="tl-body">’+
+‘<div class="tl-cat">自訂</div>’+
+‘<div class="tl-title">’+s.desc+’</div>’+
+‘<div class="tl-acts">’+
+‘<button class="tl-btn" data-id="'+s.id+'" onclick="openEdit(+this.dataset.id)">✏ 修改</button>’+
+‘<button class="tl-btn" data-id="'+s.id+'" onclick="delSch(+this.dataset.id)" style="color:var(--rust)">✖ 刪除</button>’+
+‘</div>’+
+‘</div>’;
 if(dayId){
 const panel=document.querySelector(’#’+dayId+’ .tl-panel’);
 if(panel){
@@ -1233,7 +1232,7 @@ const total=vals.reduce((a,b)=>a+b,0);
 const rawAmt=parseInt(document.getElementById(‘sa-amt’).value)||0;
 if(!total){document.getElementById(‘ratio-preview’).textContent=’’;return;}
 const amtKrw=saCur===‘krw’?rawAmt:Math.round(rawAmt*(parseFloat(document.getElementById(‘rate’).value)||0));
-let preview=names.map((n,i)=>vals[i]>0?`${n}：₩${Math.round(amtKrw*vals[i]/total).toLocaleString()}`:null).filter(Boolean).join(’　‘);
+let preview=names.map((n,i)=>vals[i]>0?n+’：₩’+Math.round(amtKrw*vals[i]/total).toLocaleString():null).filter(Boolean).join(’　‘);
 document.getElementById(‘ratio-preview’).textContent=preview?‘預覽：’+preview:’’;
 }
 
@@ -1344,7 +1343,7 @@ sw.forEach(p=>{shareMap[p]=Math.round(e.amount*e.ratios[p]/totalR);});
 // rounding adjustment
 const diff=e.amount-Object.values(shareMap).reduce((a,b)=>a+b,0);
 if(diff&&sw.length)shareMap[sw[0]]+=diff;
-metaStr=sw.map(p=>`${p} ×${e.ratios[p]}份 ₩${shareMap[p].toLocaleString()}`).join(’　’);
+metaStr=sw.map(p=>p+’ ×’+e.ratios[p]+‘份 ₩’+shareMap[p].toLocaleString()).join(’　’);
 } else {
 const sh=Math.round(e.amount/sw.length);
 sw.forEach(p=>{shareMap[p]=sh;});
@@ -1352,21 +1351,30 @@ const diff=e.amount-sh*sw.length;
 if(diff&&sw.length)shareMap[sw[0]]+=diff;
 metaStr=‘分帳：’+sw.join(’ / ‘)+’ · 每人 ₩’+sh.toLocaleString();
 }
-lh+=`<div class="exp-row"> <div style="min-width:0;flex:1"> <div class="exp-name">${e.name}<span class="exp-who">${e.payer}</span></div> <div class="exp-meta">${metaStr}</div> </div> <div class="exp-r"> <div class="exp-amt">₩${e.amount.toLocaleString()} <span class="del" onclick="delExp(${e.id})">✖</span></div> ${tw?`<div class="exp-twd">≈ NT$${tw.toLocaleString()}</div>`:''} </div> </div>`;
+lh+=’<div class="exp-row">’+
+‘<div style="min-width:0;flex:1">’+
+‘<div class="exp-name">’+e.name+’<span class="exp-who">’+e.payer+’</span></div>’+
+‘<div class="exp-meta">’+metaStr+’</div>’+
+‘</div>’+
+‘<div class="exp-r">’+
+‘<div class="exp-amt">₩’+e.amount.toLocaleString()+’ <span class="del" data-eid="'+e.id+'" onclick="delExp(+this.dataset.eid)">✖</span></div>’+
+(tw?’<div class="exp-twd">≈ NT$’+tw.toLocaleString()+’</div>’:’’)+
+‘</div>’+
+‘</div>’;
 paid[e.payer]+=e.amount;
 sw.forEach(p=>owed[p]+=shareMap[p]||0);
 total+=e.amount;
 });
 le.innerHTML=lh;
 const tt=toTwd(total);
-st.innerHTML=`總花費　₩${total.toLocaleString()}${tt?`<span>≈ NT$${tt.toLocaleString()}</span>`:''}`;
+st.innerHTML=‘總花費　₩’+total.toLocaleString()+(tt?’<span>≈ NT$’+tt.toLocaleString()+’</span>’:’’);
 let rh=’’;
 [‘Una’,‘Doris’,‘Eagle’].forEach(p=>{
 const b=paid[p]-owed[p],t2=toTwd(Math.abs(b));
-const tn=t2?` (≈NT$${t2.toLocaleString()})`:’’ ;
-if(b>0)rh+=`<div class="sum-row"><span>${p}</span><span class="pos">應拿回 ₩${b.toLocaleString()}${tn}</span></div>`;
-else if(b<0)rh+=`<div class="sum-row"><span>${p}</span><span class="neg">應拿出 ₩${Math.abs(b).toLocaleString()}${tn}</span></div>`;
-else rh+=`<div class="sum-row"><span>${p}</span><span class="neu">無須補退</span></div>`;
+const tn=t2?’ (≈NT$’+t2.toLocaleString()+’)’:’’ ;
+if(b>0)rh+=’<div class="sum-row"><span>’+p+’</span><span class="pos">應拿回 ₩’+b.toLocaleString()+tn+’</span></div>’;
+else if(b<0)rh+=’<div class="sum-row"><span>’+p+’</span><span class="neg">應拿出 ₩’+Math.abs(b).toLocaleString()+tn+’</span></div>’;
+else rh+=’<div class="sum-row"><span>’+p+’</span><span class="neu">無須補退</span></div>’;
 });
 sr.innerHTML=rh;sw_.style.display=‘block’;
 
@@ -1388,7 +1396,10 @@ while(ci<cred.length&&di<debt.length){
 const amt=Math.min(cred[ci].v,debt[di].v);
 if(amt>0){
 const tw=toTwd(amt);
-sh+=`<div class="sum-row"> <span><b>${debt[di].n}</b> 轉給 <b>${cred[ci].n}</b></span> <span class="neg">₩${amt.toLocaleString()}${tw?` <span style="font-size:11px;color:var(--ink3)">≈NT$${tw.toLocaleString()}</span>`:''} </span></div>`;
+sh+=’<div class="sum-row">’+
+‘<span><b>’+debt[di].n+’</b> 轉給 <b>’+cred[ci].n+’</b></span>’+
+‘<span class="neg">₩’+amt.toLocaleString()+(tw?’ <span style="font-size:11px;color:var(--ink3)">≈NT$’+tw.toLocaleString()+’</span>’:’’)+
+‘</span></div>’;
 cred[ci].v-=amt;
 debt[di].v-=amt;
 }
@@ -1403,42 +1414,43 @@ let ch=’’;
 [‘Una’,‘Doris’,‘Eagle’].forEach(p=>{
 const pct=Math.round(paid[p]/mx*100),tw2=toTwd(paid[p]);
 const fc={Una:‘fu’,Doris:‘fd’,Eagle:‘fe’}[p];
-ch+=`<div class="chart-lbl"><span>${p}</span><span>₩${paid[p].toLocaleString()}${tw2?` · NT$${tw2.toLocaleString()}`:''}</span></div> <div class="chart-bg"><div class="chart-fill ${fc}" style="width:${pct}%"></div></div>`;
+ch+=’<div class="chart-lbl"><span>’+p+’</span><span>₩’+paid[p].toLocaleString()+(tw2?’ · NT$’+tw2.toLocaleString():’’)+’ </span></div>’+
+‘<div class="chart-bg"><div class="chart-fill '+fc+'" style="width:'+pct+'%"></div></div>’;
 });
 ci.innerHTML=ch;cw.style.display=‘block’;
 }
 // ── ASYNC INIT：從雲端載入資料 ──
-async function init() {
+function init() {
 setSync(‘loading’);
-
-// ① 最優先：內建行程修改（最快套用，避免閃爍）
-const savedBuiltin = await dbGet(‘seoul_builtin_edits’);
+// 先載入 builtin edits（避免閃爍），再並行載入其他
+dbGet(‘seoul_builtin_edits’).then(function(savedBuiltin) {
 if (savedBuiltin) { builtinEdits = savedBuiltin; applyAllBuiltinEdits(); }
-
-// ② 並行載入其他資料
-const [rate, savedSchs, savedExps, savedSeats] = await Promise.all([
+return Promise.all([
 dbGet(‘seoul_rate’),
 dbGet(‘seoul_schs’),
 dbGet(‘seoul_exps’),
 dbGet(‘seoul_seats’),
+dbGet(‘seoul_notes’)
 ]);
-
+}).then(function(results) {
+var rate = results[0], savedSchs = results[1], savedExps = results[2];
+var savedSeats = results[3], savedNotes = results[4];
 if (rate !== null) document.getElementById(‘rate’).value = rate;
 if (savedSchs) schs = savedSchs;
 if (savedExps) exps = savedExps;
 if (savedSeats) Object.assign(seatOverrides, savedSeats);
-
-// 載入備忘錄
-const savedNotes = await dbGet(‘seoul_notes’);
 if (savedNotes && Array.isArray(savedNotes)) notes = savedNotes;
-
 setSync(‘ok’);
 renderSchs();
 renderExps();
 renderSeats();
-
-// 啟動即時訂閱
+renderNotes();
 subscribeRealtime();
+}).catch(function() {
+setSync(‘ok’);
+renderSchs(); renderExps(); renderSeats(); renderNotes();
+subscribeRealtime();
+});
 }
 init();
 </script>
