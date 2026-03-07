@@ -293,9 +293,28 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 .qexp-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .qcat{background:none;border:1px solid var(--line);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;font-family:inherit;transition:.15s}
 .qcat.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* ── WEATHER ── */
+.weather-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--paper);border-bottom:1px solid var(--line);font-size:13px;color:var(--ink)}
+.weather-icon{font-size:22px;line-height:1}
+.weather-temp{font-size:18px;font-weight:700;color:var(--ink)}
+.weather-desc{color:var(--ink2);font-size:12px}
+.weather-extra{margin-left:auto;font-size:11px;color:var(--ink3);text-align:right;line-height:1.6}
+
+/* ── EXP FILTER ── */
+.exp-filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;padding:0 2px}
+.ef-btn{padding:5px 12px;border:1px solid var(--line);border-radius:20px;background:var(--cream);font-family:'Noto Sans TC',sans-serif;font-size:12px;color:var(--ink3);cursor:pointer;transition:.15s;white-space:nowrap}
+.ef-btn.active{background:var(--sage);color:var(--paper);border-color:var(--sage)}
+
+/* ── CURRENT EVENT HIGHLIGHT ── */
+.tl-item.now-active .tl-body{border-left:3px solid var(--sage);padding-left:8px}
+.tl-item.now-active .tl-title{color:var(--sage)}
+.now-badge{display:inline-block;background:var(--sage);color:var(--paper);font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:6px;vertical-align:middle;letter-spacing:.5px}
+
 </style>
 </head>
 <body>
+<canvas id="fireworks-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9998;display:none"></canvas>
 <div class="app-shell">
 <!-- TAB BAR -->
 <div class="tabbar">
@@ -330,6 +349,9 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
     <span class="npill"><span class="ndot" style="background:var(--doris)"></span>Doris</span>
   </div>
 </div>
+
+<!-- WEATHER (only show during trip) -->
+<div id="weather-bar" style="display:none"></div>
 
 <!-- COUNTDOWN -->
 <div class="timer-strip">
@@ -590,6 +612,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
   </div>
 
   <div class="sec-hd"><span class="sec-en">log</span><span class="sec-rule"></span><span class="sec-zh">消費紀錄</span></div>
+  <div class="exp-filter-row" id="exp-filter-row"></div>
   <div class="exp-wrap" id="exp-wrap"><div id="exp-list"></div></div>
   <div class="sum-wrap" id="sum-wrap" style="display:none"><div class="sum-total" id="sum-total"></div><div id="sum-rows"></div></div>
   <div class="sum-wrap" id="settle-wrap" style="display:none"><div class="sum-total">結清方式</div><div id="settle-rows"></div></div>
@@ -735,7 +758,7 @@ function dbGet(key) {
     headers: { apikey: SB_KEY, Authorization: 'Bearer '+SB_KEY }
   }).then(function(r){ return r.json(); }).then(function(data){
     return data && data[0] ? JSON.parse(data[0].value) : null;
-  }).catch(function(){ return null; });
+  }).catch(function(err){ console.log('dbGet error:',err); return null; });
 }
 
 function dbSet(key, value) {
@@ -789,12 +812,7 @@ function togDark(){
   document.getElementById('dark-btn').textContent=on?'☀️ 亮色':'🌙 深色';
   localStorage.setItem('seoul_dark',on?'1':'0');
 }
-(function(){
-  if(localStorage.getItem('seoul_dark')==='1'){
-    document.body.classList.add('dark');
-    document.getElementById('dark-btn').textContent='☀️ 亮色';
-  }
-})();
+// dark mode applied in window.onload
 
 // ── COUNTDOWN ──
 var EVENTS=[
@@ -811,7 +829,7 @@ var T_DEPART=EVENTS[0].ts;
 var T_SHOW1 =EVENTS[2].ts;
 var T_END   =new Date('2026-03-22T17:00:00+09:00').getTime();
 
-function pad(n){return String(n).padStart(2,'0')}
+function pad(n){var s=String(n);return s.length>=2?s:'0'+s;}
 function fmtMs(ms){
   var d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
   return d>0?d+'d '+pad(h)+':'+pad(m)+':'+pad(s):pad(h)+':'+pad(m)+':'+pad(s);
@@ -831,6 +849,8 @@ function renderNextEvent(){
   bar.textContent='⏱ 距「'+next.label+'」還有'+(h>0?' '+h+'h':'')+(h>0&&m>0?' ':'')+(m>0?m+'m':'剛好');
 }
 setInterval(tick,1000);tick();
+setInterval(checkMilestones, 10000);
+setInterval(updateCurrentHighlight, 60000);
 setInterval(renderNextEvent,30000);renderNextEvent();
 
 // ── TAB NAVIGATION ──
@@ -1009,6 +1029,213 @@ function noteInput(i, field, val) {
     if (footer) footer.textContent = '已儲存 ✓';
     setTimeout(function(){ if (footer) footer.textContent = ''; }, 2000);
   }, 800);
+}
+
+
+// ── WEATHER ──
+var T_ARRIVE = new Date('2026-03-20T18:45:00+09:00').getTime();
+var T_DEPART_HOME = new Date('2026-03-23T13:30:00+08:00').getTime();
+
+function fetchWeather() {
+  var now = Date.now();
+  if (now < T_ARRIVE || now > T_DEPART_HOME) return; // 只在首爾期間顯示
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&timezone=Asia/Seoul')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var c = d.current;
+      var wc = c.weathercode;
+      var icon = wc<=1?'☀️':wc<=3?'⛅':wc<=48?'🌫️':wc<=67?'🌧️':wc<=77?'❄️':wc<=82?'🌦️':'⛈️';
+      var desc = wc<=1?'晴':wc<=3?'多雲':wc<=48?'霧':wc<=67?'雨':wc<=77?'雪':wc<=82?'陣雨':'雷雨';
+      var bar = document.getElementById('weather-bar');
+      bar.className = 'weather-bar';
+      bar.innerHTML =
+        '<span class="weather-icon">'+icon+'</span>'+
+        '<div><div class="weather-temp">'+Math.round(c.temperature_2m)+'°C</div>'+
+        '<div class="weather-desc">首爾 · '+desc+'</div></div>'+
+        '<div class="weather-extra">濕度 '+c.relativehumidity_2m+'%<br>風速 '+Math.round(c.windspeed_10m)+' km/h</div>';
+      bar.style.display = 'flex';
+    })
+    .catch(function(){});
+}
+fetchWeather();
+setInterval(fetchWeather, 600000); // 每 10 分鐘更新
+
+// ── EXP FILTER ──
+var expFilter = 'all';
+var EXP_CATS = ['all','餐飲','交通','紀念品','住宿','其他'];
+var EXP_CAT_LABEL = {all:'全部',餐飲:'🍜 餐飲',交通:'🚇 交通',紀念品:'🎁 紀念品',住宿:'🏠 住宿',其他:'📌 其他'};
+
+function renderExpFilter() {
+  var row = document.getElementById('exp-filter-row');
+  if (!row) return;
+  row.innerHTML = EXP_CATS.map(function(c){
+    return '<button class="ef-btn'+(c===expFilter?' active':'')+'" data-cat="'+c+'" onclick="setExpFilter(this.dataset.cat)">'+EXP_CAT_LABEL[c]+'</button>';
+  }).join('');
+}
+
+function setExpFilter(cat) {
+  expFilter = cat;
+  renderExpFilter();
+  renderExps();
+}
+
+// ── CURRENT EVENT HIGHLIGHT ──
+var DAY_DATES = {d0320:'2026-03-20', d0321:'2026-03-21', d0322:'2026-03-22', d0323:'2026-03-23'};
+var DAY_ORDER = ['d0320','d0321','d0322','d0323'];
+
+function updateCurrentHighlight() {
+  var now = Date.now();
+  var T_START = new Date('2026-03-20T00:00:00+09:00').getTime();
+  var T_END_TRIP = new Date('2026-03-23T23:59:00+09:00').getTime();
+  if (now < T_START || now > T_END_TRIP) return; // 只在旅程期間
+
+  // 找今天是哪天
+  var todayStr = null;
+  var nowKST = new Date(now + 9*3600000); // UTC+9
+  var mm = nowKST.getUTCMonth()+1, dd = nowKST.getUTCDate();
+  var todayKey = 'none';
+  if(mm===3){
+    if(dd===20) todayKey='d0320';
+    else if(dd===21) todayKey='d0321';
+    else if(dd===22) todayKey='d0322';
+    else if(dd===23) todayKey='d0323';
+  }
+  if(todayKey==='none') return;
+
+  // 自動折疊過去的天、展開今天
+  for(var i=0; i<DAY_ORDER.length; i++){
+    var did = DAY_ORDER[i];
+    var dayEl = document.getElementById(did);
+    if(!dayEl) continue;
+    if(did === todayKey){
+      dayEl.classList.add('open');
+    } else if(i < DAY_ORDER.indexOf(todayKey)) {
+      dayEl.classList.remove('open'); // 過去的天收起
+    }
+  }
+
+  // 高亮當前行程（找時間最接近現在但不超過的 tl-item）
+  document.querySelectorAll('.tl-item.now-active').forEach(function(el){
+    el.classList.remove('now-active');
+    var badge = el.querySelector('.now-badge');
+    if(badge) badge.remove();
+  });
+
+  var todayPanel = document.querySelector('#'+todayKey+' .tl-panel');
+  if(!todayPanel) return;
+  var items = todayPanel.querySelectorAll('.tl-item');
+  var bestItem = null;
+  var bestDiff = Infinity;
+  var nowMins = nowKST.getUTCHours()*60 + nowKST.getUTCMinutes();
+
+  for(var j=0; j<items.length; j++){
+    var timeEl = items[j].querySelector('.tl-time');
+    if(!timeEl) continue;
+    var mins = toMins(timeEl.textContent.trim());
+    var diff = nowMins - mins;
+    if(diff >= 0 && diff < bestDiff){
+      bestDiff = diff;
+      bestItem = items[j];
+    }
+  }
+
+  if(bestItem){
+    bestItem.classList.add('now-active');
+    var titleEl = bestItem.querySelector('.tl-title');
+    if(titleEl && !titleEl.querySelector('.now-badge')){
+      var badge = document.createElement('span');
+      badge.className = 'now-badge';
+      badge.textContent = '現在';
+      titleEl.appendChild(badge);
+    }
+  }
+}
+
+// ── FIREWORKS ──
+var fwActive = false;
+var fwParticles = [];
+var fwCanvas, fwCtx, fwAnimFrame;
+var fwMilestones = {
+  depart: false,
+  show1: false,
+  show2: false,
+  show3: false
+};
+
+function launchFireworks(duration) {
+  if (fwActive) return;
+  fwCanvas = document.getElementById('fireworks-canvas');
+  if (!fwCanvas) return;
+  fwCtx = fwCanvas.getContext('2d');
+  fwCanvas.width = window.innerWidth;
+  fwCanvas.height = window.innerHeight;
+  fwCanvas.style.display = 'block';
+  fwActive = true;
+  fwParticles = [];
+  var end = Date.now() + (duration || 3000);
+
+  function spawnBurst() {
+    var x = Math.random() * fwCanvas.width;
+    var y = Math.random() * fwCanvas.height * 0.6;
+    var colors = ['#f0d890','#d4a044','#e8c070','#fff','#f5ede0','var(--sage)'];
+    var color = colors[Math.floor(Math.random()*colors.length)];
+    for (var i = 0; i < 40; i++) {
+      var angle = (Math.PI * 2 * i) / 40;
+      var speed = 2 + Math.random() * 4;
+      fwParticles.push({
+        x: x, y: y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        alpha: 1,
+        color: color,
+        size: 2 + Math.random() * 2
+      });
+    }
+  }
+
+  var lastBurst = 0;
+  function animate() {
+    var now2 = Date.now();
+    fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+    if (now2 - lastBurst > 300) { spawnBurst(); spawnBurst(); lastBurst = now2; }
+    for (var i = fwParticles.length - 1; i >= 0; i--) {
+      var p = fwParticles[i];
+      p.x += p.vx; p.y += p.vy; p.vy += 0.06;
+      p.alpha -= 0.018;
+      if (p.alpha <= 0) { fwParticles.splice(i, 1); continue; }
+      fwCtx.globalAlpha = p.alpha;
+      fwCtx.fillStyle = p.color;
+      fwCtx.beginPath();
+      fwCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      fwCtx.fill();
+    }
+    fwCtx.globalAlpha = 1;
+    if (now2 < end || fwParticles.length > 0) {
+      fwAnimFrame = requestAnimationFrame(animate);
+    } else {
+      fwCanvas.style.display = 'none';
+      fwActive = false;
+    }
+  }
+  animate();
+}
+
+function checkMilestones() {
+  var now = Date.now();
+  if (!fwMilestones.depart && now >= T_DEPART && now < T_DEPART + 60000) {
+    fwMilestones.depart = true; launchFireworks(4000);
+  }
+  if (!fwMilestones.show1 && now >= T_SHOW1 && now < T_SHOW1 + 60000) {
+    fwMilestones.show1 = true; launchFireworks(5000);
+  }
+  var T_SHOW2 = EVENTS[3].ts;
+  var T_SHOW3 = EVENTS[4].ts;
+  if (!fwMilestones.show2 && now >= T_SHOW2 && now < T_SHOW2 + 60000) {
+    fwMilestones.show2 = true; launchFireworks(5000);
+  }
+  if (!fwMilestones.show3 && now >= T_SHOW3 && now < T_SHOW3 + 60000) {
+    fwMilestones.show3 = true; launchFireworks(6000);
+  }
 }
 
 // ── SEATS ──
@@ -1260,7 +1487,7 @@ function addSaExp(){
     splitWith=names.filter(function(_,i){ return vals[i]>0; });
     ratios={};names.forEach(function(n,i){if(vals[i]>0)ratios[n]=vals[i];});
   }
-  exps.push({name:name, amount:amt, payer:payer, splitWith:splitWith, ratios:ratios, id:Date.now()});
+  exps.push({name:name, amount:amt, payer:payer, splitWith:splitWith, ratios:ratios, cat:'其他', id:Date.now()});
   sv('seoul_exps',exps);renderExps();
   document.getElementById('sa-name').value='';
   document.getElementById('sa-amt').value='';
@@ -1301,7 +1528,7 @@ function submitQexp(){
   var sw=['Una','Doris','Eagle'].filter(function(x){ return document.getElementById('qsp-'+x).checked; });
   if(!amt||amt<=0){alert('請輸入金額！');return}
   if(!sw.length){alert('請選擇分帳對象！');return}
-  exps.push({name:name, amount:amt, payer:payer, splitWith:sw, id:Date.now()});
+  exps.push({name:name, amount:amt, payer:payer, splitWith:sw, cat:qCat||'其他', id:Date.now()});
   sv('seoul_exps',exps);renderExps();
   document.getElementById('q-name').value='';
   document.getElementById('q-amt').value='';
@@ -1325,8 +1552,10 @@ function renderExps(){
     sw_.style.display='none';cw.style.display='none';return;
   }
   var paid={Una:0,Doris:0,Eagle:0},owed={Una:0,Doris:0,Eagle:0};
+  renderExpFilter();
+  var filteredExps = expFilter==='all' ? exps : exps.filter(function(e){ return e.cat===expFilter; });
   var total=0,lh='';
-  exps.forEach(function(e){
+  filteredExps.forEach(function(e){
     var sw=e.splitWith||['Una','Doris','Eagle'];
     var tw=toTwd(e.amount);
     var metaStr,shareMap={};
@@ -1371,6 +1600,7 @@ function renderExps(){
     else rh+='<div class="sum-row"><span>'+p+'</span><span class="neu">無須補退</span></div>';
   });
   sr.innerHTML=rh;sw_.style.display='block';
+  exps = allExps;
 
   // ── 結清方式（最少轉帳筆數）──
   var settle=document.getElementById('settle-wrap');
@@ -1440,13 +1670,16 @@ function init() {
     renderSeats();
     renderNotes();
     subscribeRealtime();
-  }).catch(function() {
+  }).catch(function(err) {
+    var d = document.getElementById('js-error-bar');
+    if (!d) { d = document.createElement('div'); d.id='js-error-bar'; d.style.cssText='position:fixed;top:0;left:0;right:0;background:red;color:white;font-size:11px;padding:4px 8px;z-index:9999;word-break:break-all'; document.body.appendChild(d); }
+    d.textContent = 'Init error: ' + (err && err.message ? err.message : String(err));
     setSync('ok');
     renderSchs(); renderExps(); renderSeats(); renderNotes();
     subscribeRealtime();
   });
 }
-window.onload = function(){ init(); };
+window.onload = function(){ init(); updateCurrentHighlight(); };
 </script>
 </div><!-- /app-shell -->
 </body>
