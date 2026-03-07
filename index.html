@@ -718,16 +718,16 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 // ══════════════════════════════════════════
 // SUPABASE 即時同步
 // ══════════════════════════════════════════
-const SB_URL = 'https://wzqguamkplqlbehtonne.supabase.co';
-const SB_KEY = 'sb_publishable_dBJ22fniAN-sKnGk89suFQ_jnO_OPkr';
+var SB_URL = 'https://wzqguamkplqlbehtonne.supabase.co';
+var SB_KEY = 'sb_publishable_dBJ22fniAN-sKnGk89suFQ_jnO_OPkr';
 
 // 同步狀態指示
 function setSync(state) {
   // state: 'ok' | 'saving' | 'error' | 'loading'
-  const el = document.getElementById('sync-dot');
+  var el = document.getElementById('sync-dot');
   if (!el) return;
-  const map = { ok:'#6db87a', saving:'#f0b429', error:'#e05c5c', loading:'#aaa' };
-  const tip = { ok:'已同步', saving:'儲存中…', error:'連線失敗', loading:'載入中…' };
+  var map = { ok:'#6db87a', saving:'#f0b429', error:'#e05c5c', loading:'#aaa' };
+  var tip = { ok:'已同步', saving:'儲存中…', error:'連線失敗', loading:'載入中…' };
   el.style.background = map[state] || '#aaa';
   el.title = tip[state] || '';
 }
@@ -755,7 +755,7 @@ function dbSet(key, value) {
 }
 
 // 即時同步：每 5 秒 polling，偵測到變更就更新
-let _lastSnapshot = {};
+var _lastSnapshot = {};
 function pollSync() {
   fetch(SB_URL+'/rest/v1/store?select=key,value', {
     headers: { apikey: SB_KEY, Authorization: 'Bearer '+SB_KEY }
@@ -787,7 +787,7 @@ function sv(k, v) {
 
 // ── DARK MODE ──
 function togDark(){
-  const on=document.body.classList.toggle('dark');
+  var on=document.body.classList.toggle('dark');
   document.getElementById('dark-btn').textContent=on?'☀️ 亮色':'🌙 深色';
   localStorage.setItem('seoul_dark',on?'1':'0');
 }
@@ -799,7 +799,7 @@ function togDark(){
 })();
 
 // ── COUNTDOWN ──
-const EVENTS=[
+var EVENTS=[
   {dt:'2026-03-20T15:15:00+08:00',label:'Una & Eagle 起飛'},
   {dt:'2026-03-20T18:45:00+09:00',label:'抵達仁川'},
   {dt:'2026-03-21T14:00:00+09:00',label:'第一場開演'},
@@ -807,29 +807,29 @@ const EVENTS=[
   {dt:'2026-03-22T14:00:00+09:00',label:'最終場開演'},
   {dt:'2026-03-22T22:00:00+09:00',label:'Doris 前往機場'},
   {dt:'2026-03-23T11:40:00+09:00',label:'Una & Eagle 回程'},
-].map(e=>({...e,ts:new Date(e.dt).getTime()}));
+].map(function(e){ return {dt:e.dt, label:e.label, ts:new Date(e.dt).getTime()}; });
 
-const T_DEPART=EVENTS[0].ts;
-const T_SHOW1 =EVENTS[2].ts;
-const T_END   =new Date('2026-03-22T17:00:00+09:00').getTime();
+var T_DEPART=EVENTS[0].ts;
+var T_SHOW1 =EVENTS[2].ts;
+var T_END   =new Date('2026-03-22T17:00:00+09:00').getTime();
 
 function pad(n){return String(n).padStart(2,'0')}
 function fmtMs(ms){
-  const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
+  var d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
   return d>0?d+'d '+pad(h)+':'+pad(m)+':'+pad(s):pad(h)+':'+pad(m)+':'+pad(s);
 }
 function tick(){
-  const now=Date.now(),t=document.getElementById('timer'),l=document.getElementById('tlabel');
+  var now=Date.now(),t=document.getElementById('timer'),l=document.getElementById('tlabel');
   if(now<T_DEPART){t.textContent=fmtMs(T_DEPART-now);l.textContent='距離起飛'}
   else if(now<T_SHOW1){t.textContent=fmtMs(T_SHOW1-now);l.textContent='距離第一場'}
   else if(now<T_END){t.textContent='見面會進行中 ✦';l.textContent=''}
   else{t.textContent='美好的回憶 ♡';l.textContent=''}
 }
 function renderNextEvent(){
-  const now=Date.now(),bar=document.getElementById('next-event-bar');
-  const next=EVENTS.find(e=>e.ts>now);
+  var now=Date.now(),bar=document.getElementById('next-event-bar');
+  var next=EVENTS.find(function(e){ return e.ts>now; });
   if(!next||next.ts-now>7*864e5){bar.textContent='';return;}
-  const diff=next.ts-now,h=Math.floor(diff/36e5),m=Math.floor(diff%36e5/6e4);
+  var diff=next.ts-now,h=Math.floor(diff/36e5),m=Math.floor(diff%36e5/6e4);
   bar.textContent='⏱ 距「'+next.label+'」還有'+(h>0?' '+h+'h':'')+(h>0&&m>0?' ':'')+(m>0?m+'m':'剛好');
 }
 setInterval(tick,1000);tick();
@@ -837,8 +837,8 @@ setInterval(renderNextEvent,30000);renderNextEvent();
 
 // ── TAB NAVIGATION ──
 function swTab(id,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tabbtn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('page-'+id).classList.add('active');
   btn.classList.add('active');
   // Show FAB only on schedule tab
@@ -848,15 +848,15 @@ function swTab(id,btn){
 // ── TIMELINE ──
 function togDay(id){document.getElementById(id).classList.toggle('open')}
 (function autoOpen(){
-  const now=new Date();
-  const days=[
+  var now=new Date();
+  var days=[
     {id:'d0320',d:new Date('2026-03-20')},
     {id:'d0321',d:new Date('2026-03-21')},
     {id:'d0322',d:new Date('2026-03-22')},
     {id:'d0323',d:new Date('2026-03-23')},
   ];
-  let target=days[0].id;
-  for(const {id,d} of days){
+  var target=days[0].id;
+  for(var {id,d} of days){
     if(now<=d){target=id;break;}
     else target=id;
   }
@@ -866,16 +866,16 @@ function togDay(id){document.getElementById(id).classList.toggle('open')}
 
 
 // ── 內建行程編輯 ──
-let builtinEdits = {};
+var builtinEdits = {};
 function openBuiltinEdit(eid, btn) {
-  const item = btn.closest('.tl-item');
-  const tc = item.querySelector('[data-eid="'+eid+'"]');
-  const timeEl = item.querySelector('.tl-time');
-  const ampEl = item.querySelector('.tl-ampm');
-  const titleEl = item.querySelector('.tl-title');
-  const descEl = item.querySelector('.tl-desc');
+  var item = btn.closest('.tl-item');
+  var tc = item.querySelector('[data-eid="'+eid+'"]');
+  var timeEl = item.querySelector('.tl-time');
+  var ampEl = item.querySelector('.tl-ampm');
+  var titleEl = item.querySelector('.tl-title');
+  var descEl = item.querySelector('.tl-desc');
   // 讀現有值（可能已被覆蓋過）
-  const saved = builtinEdits[eid] || {};
+  var saved = builtinEdits[eid] || {};
   document.getElementById('be-eid').value = eid;
   document.getElementById('be-time').value = saved.time || (timeEl ? timeEl.textContent : '');
   document.getElementById('be-tz').value = saved.tz || (ampEl ? ampEl.textContent.trim() : 'KST');
@@ -887,11 +887,11 @@ function closeBuiltinEdit() {
   document.getElementById('builtin-edit-modal').classList.remove('on');
 }
 function saveBuiltinEdit() {
-  const eid = document.getElementById('be-eid').value;
-  const time = document.getElementById('be-time').value;
-  const tz = document.getElementById('be-tz').value;
-  const title = document.getElementById('be-title').value.trim();
-  const desc = document.getElementById('be-desc').value.trim();
+  var eid = document.getElementById('be-eid').value;
+  var time = document.getElementById('be-time').value;
+  var tz = document.getElementById('be-tz').value;
+  var title = document.getElementById('be-title').value.trim();
+  var desc = document.getElementById('be-desc').value.trim();
   if (!title) { alert('請輸入標題'); return; }
   builtinEdits[eid] = { time, tz, title, desc };
   sv('seoul_builtin_edits', builtinEdits);
@@ -899,21 +899,21 @@ function saveBuiltinEdit() {
   closeBuiltinEdit();
 }
 function applyBuiltinEdit(eid) {
-  const e = builtinEdits[eid];
+  var e = builtinEdits[eid];
   if (!e) return;
-  const tc = document.querySelector('[data-eid="'+eid+'"]');
+  var tc = document.querySelector('[data-eid="'+eid+'"]');
   if (!tc) return;
-  const item = tc.closest('.tl-item');
-  const timeEl = item.querySelector('.tl-time');
-  const ampEl = item.querySelector('.tl-ampm');
-  const titleEl = item.querySelector('.tl-title');
-  const descEl = item.querySelector('.tl-desc');
+  var item = tc.closest('.tl-item');
+  var timeEl = item.querySelector('.tl-time');
+  var ampEl = item.querySelector('.tl-ampm');
+  var titleEl = item.querySelector('.tl-title');
+  var descEl = item.querySelector('.tl-desc');
   if (timeEl && e.time) timeEl.textContent = e.time;
   if (ampEl && e.tz) ampEl.textContent = e.tz;
   if (titleEl && e.title) titleEl.textContent = e.title;
   if (descEl && e.desc !== undefined) descEl.textContent = e.desc;
   // 重新排列這一天的行程順序
-  const panel = item.closest('.tl-panel');
+  var panel = item.closest('.tl-panel');
   if (panel) reorderPanel(panel);
 }
 function applyAllBuiltinEdits() {
@@ -922,15 +922,15 @@ function applyAllBuiltinEdits() {
   document.querySelectorAll('.tl-panel').forEach(reorderPanel);
 }
 function reorderPanel(panel) {
-  const items = [...panel.querySelectorAll('.tl-item')];
-  items.sort((a, b) => {
-    const ta = getItemMins(a), tb = getItemMins(b);
+  var items = Array.prototype.slice.call(panel.querySelectorAll('.tl-item'));
+  items.sort(function(a, b){
+    var ta = getItemMins(a), tb = getItemMins(b);
     return ta - tb;
   });
-  items.forEach(el => panel.appendChild(el));
+  items.forEach(function(el){ panel.appendChild(el); });
 }
 function getItemMins(item) {
-  const t = item.querySelector('.tl-time');
+  var t = item.querySelector('.tl-time');
   if (!t) return 9999;
   return toMins(t.textContent.trim());
 }
@@ -940,13 +940,13 @@ document.getElementById('builtin-edit-modal').addEventListener('click', function
 
 
 // ── NOTES ──
-let notes = []; // [{id, title, body}]
-let noteCurIdx = 0;
-let noteSaveTimer = null;
+var notes = []; // [{id, title, body}]
+var noteCurIdx = 0;
+var noteSaveTimer = null;
 
 function renderNotes() {
-  const tabsEl = document.getElementById('notes-tabs');
-  const panelsEl = document.getElementById('notes-panels');
+  var tabsEl = document.getElementById('notes-tabs');
+  var panelsEl = document.getElementById('notes-panels');
   if (!tabsEl || !panelsEl) return;
 
   if (!notes.length) {
@@ -1003,22 +1003,22 @@ function noteInput(i, field, val) {
 notes[i][field] = val;
 // 更新頁籤標題即時顯示
 if (field === ‘title’) {
-const tabs = document.querySelectorAll(’.notes-tab’);
+var tabs = document.querySelectorAll(’.notes-tab’);
 if (tabs[i]) tabs[i].childNodes[0].textContent = val || (’備忘 ’+(i+1));
 }
 // debounce 存檔
-const footer = document.getElementById(‘nf’+i);
+var footer = document.getElementById(‘nf’+i);
 if (footer) footer.textContent = ‘儲存中…’;
 clearTimeout(noteSaveTimer);
-noteSaveTimer = setTimeout(() => {
+noteSaveTimer = setTimeout(function(){
 sv(‘seoul_notes’, notes);
 if (footer) footer.textContent = ‘已儲存 ✓’;
-setTimeout(() => { if (footer) footer.textContent = ‘’; }, 2000);
+setTimeout(function(){ if (footer) footer.textContent = ‘’; }, 2000);
 }, 800);
 }
 
 // ── SEATS ──
-const SEAT_SHOWS=[
+var SEAT_SHOWS=[
 {label:‘3/21 14:00 第一場’, people:[
 {name:‘Una’,  color:‘una’,   seat:‘2F · P2 · Row 3 · Seat 37’},
 {name:‘Eagle’,color:‘eagle’, seat:‘2F · O2 · Row 5 · Seat 68’},
@@ -1036,21 +1036,21 @@ const SEAT_SHOWS=[
 ]},
 ];
 // Load saved overrides from localStorage
-const seatOverrides={};
+var seatOverrides={};
 function getSeat(si,pi){
-const key=si+’-’+pi;
+var key=si+’-’+pi;
 return seatOverrides[key]||SEAT_SHOWS[si].people[pi].seat;
 }
 function saveSeatOverride(si,pi,val){
 seatOverrides[si+’-’+pi]=val;
 sv(‘seoul_seats’, seatOverrides);
 }
-let curShowIdx=0;
+var curShowIdx=0;
 function renderSeats(){
-const si=curShowIdx;
-const show=SEAT_SHOWS[si];
-let html=’<div style="background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px 15px;margin-bottom:10px">’;
-show.people.forEach((p,pi)=>{
+var si=curShowIdx;
+var show=SEAT_SHOWS[si];
+var html=’<div style="background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px 15px;margin-bottom:10px">’;
+show.people.forEach(function(p,pi){
 html+=’<div class="seat-row">’+
 ‘<span class="ntag" style="background:var(--'+p.color+')">’+p.name+’</span>’+
 ‘<span style="flex:1">’+getSeat(si,pi)+’</span>’+
@@ -1061,7 +1061,7 @@ html+=’</div>’;
 document.getElementById(‘seats-list’).innerHTML=html;
 }
 function swShow(i,btn){
-document.querySelectorAll(’.stab’).forEach(b=>b.classList.remove(‘active’));
+document.querySelectorAll(’.stab’).forEach(function(b){ b.classList.remove(‘active’); });
 btn.classList.add(‘active’);
 curShowIdx=i;
 renderSeats();
@@ -1070,16 +1070,16 @@ function openSeatModal(si,pi){
 document.getElementById(‘seat-show-idx’).value=si;
 document.getElementById(‘seat-person-idx’).value=pi;
 document.getElementById(‘seat-val’).value=getSeat(si,pi);
-const p=SEAT_SHOWS[si].people[pi];
+var p=SEAT_SHOWS[si].people[pi];
 document.getElementById(‘seat-modal-title’).textContent=p.name+’ · ‘+SEAT_SHOWS[si].label.split(’ ’)[2];
 document.getElementById(‘seat-modal’).classList.add(‘on’);
-setTimeout(()=>document.getElementById(‘seat-val’).focus(),100);
+setTimeout(function(){ document.getElementById(‘seat-val’).focus(); },100);
 }
 function closeSeatModal(){document.getElementById(‘seat-modal’).classList.remove(‘on’)}
 function saveSeat(){
-const si=+document.getElementById(‘seat-show-idx’).value;
-const pi=+document.getElementById(‘seat-person-idx’).value;
-const val=document.getElementById(‘seat-val’).value.trim();
+var si=+document.getElementById(‘seat-show-idx’).value;
+var pi=+document.getElementById(‘seat-person-idx’).value;
+var val=document.getElementById(‘seat-val’).value.trim();
 if(!val){alert(‘請輸入座位資訊’);return}
 saveSeatOverride(si,pi,val);
 closeSeatModal();
@@ -1088,50 +1088,50 @@ renderSeats();
 document.getElementById(‘seat-modal’).addEventListener(‘click’,function(e){if(e.target===this)closeSeatModal()});
 
 // ── 行程附帶記帳 ──
-let expCur=‘krw’;
+var expCur=‘krw’;
 function setExpCur(cur,btn){
 expCur=cur;
-document.querySelectorAll(’#exp-cur-krw,#exp-cur-twd’).forEach(b=>b.classList.remove(‘active’));
+document.querySelectorAll(’#exp-cur-krw,#exp-cur-twd’).forEach(function(b){ b.classList.remove(‘active’); });
 btn.classList.add(‘active’);
 document.getElementById(‘exp-amt’).placeholder=cur===‘krw’?‘金額（₩ 韓元）’:‘金額（NT$ 台幣）’;
 }
 function updSp(n){
-const c=document.getElementById(‘sp-’+n),l=document.getElementById(‘lb-’+n);
+var c=document.getElementById(‘sp-’+n),l=document.getElementById(‘lb-’+n);
 c.checked?l.classList.add(‘s’+n[0].toLowerCase()):l.classList.remove(‘s’+n[0].toLowerCase());
 }
 function togExpF(){
-const on=document.getElementById(‘tog-exp’).checked;
+var on=document.getElementById(‘tog-exp’).checked;
 document.getElementById(‘exp-fields’).style.display=on?‘block’:‘none’;
 if(on){
-const d=document.getElementById(‘new-desc’).value.trim();
+var d=document.getElementById(‘new-desc’).value.trim();
 // auto-fill amount field focus
 document.getElementById(‘exp-amt’).focus();
 }
 }
 
 // ── CUSTOM SCHEDULE ──
-let schs=[];
-const DATE_TO_DAY={‘2026-03-20’:‘d0320’,‘2026-03-21’:‘d0321’,‘2026-03-22’:‘d0322’,‘2026-03-23’:‘d0323’};
-const toMins=t=>{if(!t||!t.includes(’:’))return 9999;const[h,m]=t.split(’:’).map(Number);return(h===0?24:h)*60+(m||0)};
+var schs=[];
+var DATE_TO_DAY={‘2026-03-20’:‘d0320’,‘2026-03-21’:‘d0321’,‘2026-03-22’:‘d0322’,‘2026-03-23’:‘d0323’};
+var toMins=function(t){if(!t||!t.includes(’:’))return 9999;var[h,m]=t.split(’:’).map(Number);return(h===0?24:h)*60+(m||0)};
 
 function addSch(){
-const date=document.getElementById(‘new-date’).value;
-const time=document.getElementById(‘new-time’).value;
-const desc=document.getElementById(‘new-desc’).value.trim();
+var date=document.getElementById(‘new-date’).value;
+var time=document.getElementById(‘new-time’).value;
+var desc=document.getElementById(‘new-desc’).value.trim();
 if(!desc){alert(‘請輸入行程內容！’);return}
-const schId=Date.now();
+var schId=Date.now();
 schs.push({date,time,desc,id:schId});
 sv(‘seoul_schs’,schs);
 // 附帶記帳
 if(document.getElementById(‘tog-exp’).checked){
-const raw=parseInt(document.getElementById(‘exp-amt’).value);
-const amt=toKrw(raw,expCur);
+var raw=parseInt(document.getElementById(‘exp-amt’).value);
+var amt=toKrw(raw,expCur);
 if(amt===null)return;
 if(!amt||amt<=0){alert(‘請輸入花費金額！’);return}
-const payer=document.getElementById(‘exp-payer’).value;
-const sw=[‘Una’,‘Doris’,‘Eagle’].filter(x=>document.getElementById(‘sp-’+x).checked);
+var payer=document.getElementById(‘exp-payer’).value;
+var sw=[‘Una’,‘Doris’,‘Eagle’].filter(function(x){ return document.getElementById(‘sp-’+x).checked; });
 if(!sw.length){alert(‘請選擇分帳對象！’);return}
-exps.push({name:desc,amount:amt,payer,splitWith:sw,id:schId+1});
+exps.push({name:desc,amount:amt,payer:payer,splitWith:sw,id:schId+1});
 sv(‘seoul_exps’,exps);
 renderExps();
 document.getElementById(‘exp-amt’).value=’’;
@@ -1142,13 +1142,13 @@ document.getElementById(‘new-desc’).value=’’;
 renderSchs();
 }
 function renderSchs(){
-document.querySelectorAll(’.tl-item-custom’).forEach(el=>el.remove());
+document.querySelectorAll(’.tl-item-custom’).forEach(function(el){ el.remove(); });
 document.getElementById(‘custom-container’).innerHTML=’’;
 if(!schs.length)return;
-schs.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
-schs.forEach(s=>{
-const dayId=DATE_TO_DAY[s.date];
-const el=document.createElement(‘div’);
+schs.sort(function(a,b){ return (a.date+a.time).localeCompare(b.date+b.time); });
+schs.forEach(function(s){
+var dayId=DATE_TO_DAY[s.date];
+var el=document.createElement(‘div’);
 el.className=‘tl-item tl-item-custom’;
 el.innerHTML=’<div class="tl-tc"><span class="tl-time">’+s.time+’</span></div>’+
 ‘<div class="tl-gap"></div>’+
@@ -1161,16 +1161,16 @@ el.innerHTML=’<div class="tl-tc"><span class="tl-time">’+s.time+’</span></
 ‘</div>’+
 ‘</div>’;
 if(dayId){
-const panel=document.querySelector(’#’+dayId+’ .tl-panel’);
+var panel=document.querySelector(’#’+dayId+’ .tl-panel’);
 if(panel){
 document.getElementById(dayId).classList.add(‘open’);
-const schMins=toMins(s.time);
-const existing=[…panel.querySelectorAll(’.tl-item:not(.tl-item-custom)’)];
-let inserted=false;
-for(const item of existing){
-const tEl=item.querySelector(’.tl-time’),aEl=item.querySelector(’.tl-ampm’);
+var schMins=toMins(s.time);
+var existing=Array.prototype.slice.call(panel.querySelectorAll(’.tl-item:not(.tl-item-custom)’));
+var inserted=false;
+for(var item of existing){
+var tEl=item.querySelector(’.tl-time’),aEl=item.querySelector(’.tl-ampm’);
 if(!tEl||!aEl)continue;
-const raw=(tEl.textContent+(aEl.textContent||’’)).substring(0,5);
+var raw=(tEl.textContent+(aEl.textContent||’’)).substring(0,5);
 if(toMins(raw)>schMins){item.before(el);inserted=true;break;}
 }
 if(!inserted)panel.appendChild(el);
@@ -1181,7 +1181,7 @@ document.getElementById(‘custom-container’).appendChild(el);
 });
 }
 function openEdit(id){
-const s=schs.find(x=>x.id===id);if(!s)return;
+var s=schs.find(function(x){ return x.id===id; });if(!s)return;
 document.getElementById(‘edit-id’).value=id;
 document.getElementById(‘edit-date’).value=s.date;
 document.getElementById(‘edit-time’).value=s.time;
@@ -1190,7 +1190,7 @@ document.getElementById(‘edit-modal’).classList.add(‘on’);
 }
 function closeEdit(){document.getElementById(‘edit-modal’).classList.remove(‘on’)}
 function saveEdit(){
-const id=+document.getElementById(‘edit-id’).value,s=schs.find(x=>x.id===id);
+var id=+document.getElementById(‘edit-id’).value,s=schs.find(function(x){ return x.id===id; });
 if(!s)return;
 s.date=document.getElementById(‘edit-date’).value;
 s.time=document.getElementById(‘edit-time’).value;
@@ -1199,155 +1199,155 @@ if(!s.desc){alert(‘請輸入行程！’);return}
 sv(‘seoul_schs’,schs);closeEdit();renderSchs();
 }
 document.getElementById(‘edit-modal’).addEventListener(‘click’,function(e){if(e.target===this)closeEdit()});
-function delSch(id){schs=schs.filter(s=>s.id!==id);sv(‘seoul_schs’,schs);renderSchs()}
+function delSch(id){schs=schs.filter(function(s){ return s.id!==id; });sv(‘seoul_schs’,schs);renderSchs()}
 
 // ── EXPENSES ──
-let exps=[];
-const rEl=document.getElementById(‘rate’);
+var exps=[];
+var rEl=document.getElementById(‘rate’);
 rEl.value=’’;
-rEl.addEventListener(‘input’,()=>{sv(‘seoul_rate’,rEl.value);renderExps()});
+rEl.addEventListener(‘input’,function(){sv(‘seoul_rate’,rEl.value);renderExps();});
 function getRate(){return parseFloat(rEl.value)||0}
-function toTwd(k){const r=getRate();return r?Math.round(k/r):null}
+function toTwd(k){var r=getRate();return r?Math.round(k/r):null}
 function toKrw(amt,cur){
 if(cur===‘krw’)return amt;
-const r=getRate();
+var r=getRate();
 if(!r){alert(‘請先填入匯率才能以台幣記帳！’);return null;}
 return Math.round(amt*r);
 }
 
 // Standalone expense form
-let saCur=‘krw’, saMode=‘equal’;
+var saCur=‘krw’, saMode=‘equal’;
 function setSaMode(mode,btn){
 saMode=mode;
-document.querySelectorAll(’.smode-btn’).forEach(b=>b.classList.remove(‘active’));
+document.querySelectorAll(’.smode-btn’).forEach(function(b){ b.classList.remove(‘active’); });
 btn.classList.add(‘active’);
 document.getElementById(‘sa-equal-wrap’).style.display=mode===‘equal’?‘block’:‘none’;
 document.getElementById(‘sa-ratio-wrap’).style.display=mode===‘ratio’?‘block’:‘none’;
 if(mode===‘ratio’) previewRatio();
 }
 function previewRatio(){
-const names=[‘Una’,‘Doris’,‘Eagle’];
-const vals=names.map(n=>parseFloat(document.getElementById(‘ratio-’+n).value)||0);
-const total=vals.reduce((a,b)=>a+b,0);
-const rawAmt=parseInt(document.getElementById(‘sa-amt’).value)||0;
+var names=[‘Una’,‘Doris’,‘Eagle’];
+var vals=names.map(function(n){ return parseFloat(document.getElementById(‘ratio-’+n).value)||0; });
+var total=vals.reduce(function(a,b){ return a+b; },0);
+var rawAmt=parseInt(document.getElementById(‘sa-amt’).value)||0;
 if(!total){document.getElementById(‘ratio-preview’).textContent=’’;return;}
-const amtKrw=saCur===‘krw’?rawAmt:Math.round(rawAmt*(parseFloat(document.getElementById(‘rate’).value)||0));
-let preview=names.map((n,i)=>vals[i]>0?n+’：₩’+Math.round(amtKrw*vals[i]/total).toLocaleString():null).filter(Boolean).join(’　‘);
+var amtKrw=saCur===‘krw’?rawAmt:Math.round(rawAmt*(parseFloat(document.getElementById(‘rate’).value)||0));
+var preview=names.map(function(n,i){ return vals[i]>0?n+’：₩’+Math.round(amtKrw*vals[i]/total).toLocaleString():null; }).filter(Boolean).join(’　‘);
 document.getElementById(‘ratio-preview’).textContent=preview?‘預覽：’+preview:’’;
 }
 
 function setSaCur(cur,btn){
 saCur=cur;
-document.querySelectorAll(’#sa-cur-krw,#sa-cur-twd’).forEach(b=>b.classList.remove(‘active’));
+document.querySelectorAll(’#sa-cur-krw,#sa-cur-twd’).forEach(function(b){ b.classList.remove(‘active’); });
 btn.classList.add(‘active’);
 document.getElementById(‘sa-amt’).placeholder=cur===‘krw’?‘金額（₩ 韓元）’:‘金額（NT$ 台幣）’;
 }
 function updSaSp(n){
-const c=document.getElementById(‘sasp-’+n),l=document.getElementById(‘salb-’+n);
+var c=document.getElementById(‘sasp-’+n),l=document.getElementById(‘salb-’+n);
 c.checked?l.classList.add(‘s’+n[0].toLowerCase()):l.classList.remove(‘s’+n[0].toLowerCase());
 }
 function addSaExp(){
-const name=document.getElementById(‘sa-name’).value.trim();
-const raw=parseInt(document.getElementById(‘sa-amt’).value);
-const amt=toKrw(raw,saCur);
+var name=document.getElementById(‘sa-name’).value.trim();
+var raw=parseInt(document.getElementById(‘sa-amt’).value);
+var amt=toKrw(raw,saCur);
 if(amt===null)return;
-const payer=document.getElementById(‘sa-payer’).value;
+var payer=document.getElementById(‘sa-payer’).value;
 if(!name){alert(‘請輸入消費項目！’);return}
 if(!amt||amt<=0){alert(‘請輸入金額！’);return}
-let splitWith,ratios=null;
+var splitWith,ratios=null;
 if(saMode===‘equal’){
-splitWith=[‘Una’,‘Doris’,‘Eagle’].filter(x=>document.getElementById(‘sasp-’+x).checked);
+splitWith=[‘Una’,‘Doris’,‘Eagle’].filter(function(x){ return document.getElementById(‘sasp-’+x).checked; });
 if(!splitWith.length){alert(‘請選擇分帳對象！’);return}
 } else {
-const names=[‘Una’,‘Doris’,‘Eagle’];
-const vals=names.map(n=>parseFloat(document.getElementById(‘ratio-’+n).value)||0);
-const total=vals.reduce((a,b)=>a+b,0);
+var names=[‘Una’,‘Doris’,‘Eagle’];
+var vals=names.map(function(n){ return parseFloat(document.getElementById(‘ratio-’+n).value)||0; });
+var total=vals.reduce(function(a,b){ return a+b; },0);
 if(!total){alert(‘請填入至少一人的天數／份數！’);return}
-splitWith=names.filter((_,i)=>vals[i]>0);
-ratios={};names.forEach((n,i)=>{if(vals[i]>0)ratios[n]=vals[i];});
+splitWith=names.filter(function(_,i){ return vals[i]>0; });
+ratios={};names.forEach(function(n,i){if(vals[i]>0)ratios[n]=vals[i];});
 }
 exps.push({name,amount:amt,payer,splitWith,ratios,id:Date.now()});
 sv(‘seoul_exps’,exps);renderExps();
 document.getElementById(‘sa-name’).value=’’;
 document.getElementById(‘sa-amt’).value=’’;
-if(saMode===‘ratio’)[‘Una’,‘Doris’,‘Eagle’].forEach(n=>{document.getElementById(‘ratio-’+n).value=’’;});
+if(saMode===‘ratio’)[‘Una’,‘Doris’,‘Eagle’].forEach(function(n){document.getElementById(‘ratio-’+n).value=’’;});
 document.getElementById(‘ratio-preview’).textContent=’’;
-const btn=document.querySelector(’#page-expenses .btn’);
-const orig=btn.textContent;btn.textContent=‘✓ 已記帳’;
-setTimeout(()=>btn.textContent=orig,1200);
+var btn=document.querySelector(’#page-expenses .btn’);
+var orig=btn.textContent;btn.textContent=‘✓ 已記帳’;
+setTimeout(function(){ return btn.textContent=orig; },1200);
 }
 
 // Quick expense (FAB)
-let qCur=‘krw’,qCat=’’;
+var qCur=‘krw’,qCat=’’;
 function setQCur(cur,btn){
 qCur=cur;
-document.querySelectorAll(’#q-cur-krw,#q-cur-twd’).forEach(b=>b.classList.remove(‘active’));
+document.querySelectorAll(’#q-cur-krw,#q-cur-twd’).forEach(function(b){ b.classList.remove(‘active’); });
 btn.classList.add(‘active’);
 document.getElementById(‘q-amt’).placeholder=cur===‘krw’?‘金額（₩）’:‘金額（NT$）’;
 }
 function updQsp(n){
-const c=document.getElementById(‘qsp-’+n),l=document.getElementById(‘qlb-’+n);
+var c=document.getElementById(‘qsp-’+n),l=document.getElementById(‘qlb-’+n);
 c.checked?l.classList.add(‘s’+n[0].toLowerCase()):l.classList.remove(‘s’+n[0].toLowerCase());
 }
 function setQcat(btn,cat){
-document.querySelectorAll(’.qcat’).forEach(b=>b.classList.remove(‘active’));
+document.querySelectorAll(’.qcat’).forEach(function(b){ b.classList.remove(‘active’); });
 btn.classList.add(‘active’);qCat=cat;
-const n=document.getElementById(‘q-name’);if(!n.value)n.value=cat;
+var n=document.getElementById(‘q-name’);if(!n.value)n.value=cat;
 }
-function openQexp(){document.getElementById(‘qexp-modal’).classList.add(‘on’);setTimeout(()=>document.getElementById(‘q-name’).focus(),100)}
+function openQexp(){document.getElementById(‘qexp-modal’).classList.add(‘on’);setTimeout(function(){ document.getElementById(‘q-name’).focus(); },100)}
 function closeQexp(){document.getElementById(‘qexp-modal’).classList.remove(‘on’)}
 document.getElementById(‘qexp-modal’).addEventListener(‘click’,function(e){if(e.target===this)closeQexp()});
 function submitQexp(){
-const _qn=document.getElementById(‘q-name’).value.trim();
-const name=_qn||qCat||‘消費’;
-const raw=parseInt(document.getElementById(‘q-amt’).value);
-const amt=toKrw(raw,qCur);
+var _qn=document.getElementById(‘q-name’).value.trim();
+var name=_qn||qCat||‘消費’;
+var raw=parseInt(document.getElementById(‘q-amt’).value);
+var amt=toKrw(raw,qCur);
 if(amt===null)return;
-const payer=document.getElementById(‘q-payer’).value;
-const sw=[‘Una’,‘Doris’,‘Eagle’].filter(x=>document.getElementById(‘qsp-’+x).checked);
+var payer=document.getElementById(‘q-payer’).value;
+var sw=[‘Una’,‘Doris’,‘Eagle’].filter(function(x){ return document.getElementById(‘qsp-’+x).checked; });
 if(!amt||amt<=0){alert(‘請輸入金額！’);return}
 if(!sw.length){alert(‘請選擇分帳對象！’);return}
 exps.push({name,amount:amt,payer,splitWith:sw,id:Date.now()});
 sv(‘seoul_exps’,exps);renderExps();
 document.getElementById(‘q-name’).value=’’;
 document.getElementById(‘q-amt’).value=’’;
-document.querySelectorAll(’.qcat’).forEach(b=>b.classList.remove(‘active’));
+document.querySelectorAll(’.qcat’).forEach(function(b){ b.classList.remove(‘active’); });
 qCat=’’;qCur=‘krw’;
 document.getElementById(‘q-cur-krw’).classList.add(‘active’);
 document.getElementById(‘q-cur-twd’).classList.remove(‘active’);
 closeQexp();
 }
 
-function delExp(id){exps=exps.filter(e=>e.id!==id);sv(‘seoul_exps’,exps);renderExps()}
+function delExp(id){exps=exps.filter(function(e){ return e.id!==id; });sv(‘seoul_exps’,exps);renderExps()}
 function renderExps(){
-const le=document.getElementById(‘exp-list’);
-const sw_=document.getElementById(‘sum-wrap’);
-const st=document.getElementById(‘sum-total’);
-const sr=document.getElementById(‘sum-rows’);
-const cw=document.getElementById(‘chart-wrap’);
-const ci=document.getElementById(‘chart-inner’);
+var le=document.getElementById(‘exp-list’);
+var sw_=document.getElementById(‘sum-wrap’);
+var st=document.getElementById(‘sum-total’);
+var sr=document.getElementById(‘sum-rows’);
+var cw=document.getElementById(‘chart-wrap’);
+var ci=document.getElementById(‘chart-inner’);
 if(!exps.length){
 le.innerHTML=’<div style="padding:18px 15px;text-align:center;font-size:13px;color:var(--ink3)">目前沒有消費紀錄</div>’;
 sw_.style.display=‘none’;cw.style.display=‘none’;return;
 }
-const paid={Una:0,Doris:0,Eagle:0},owed={Una:0,Doris:0,Eagle:0};
-let total=0,lh=’’;
-exps.forEach(e=>{
-const sw=e.splitWith||[‘Una’,‘Doris’,‘Eagle’];
-const tw=toTwd(e.amount);
-let metaStr,shareMap={};
+var paid={Una:0,Doris:0,Eagle:0},owed={Una:0,Doris:0,Eagle:0};
+var total=0,lh=’’;
+exps.forEach(function(e){
+var sw=e.splitWith||[‘Una’,‘Doris’,‘Eagle’];
+var tw=toTwd(e.amount);
+var metaStr,shareMap={};
 if(e.ratios){
 // 比例分帳
-const totalR=Object.values(e.ratios).reduce((a,b)=>a+b,0);
-sw.forEach(p=>{shareMap[p]=Math.round(e.amount*e.ratios[p]/totalR);});
+var totalR=Object.values(e.ratios).reduce(function(a,b){ return a+b; },0);
+sw.forEach(function(p){shareMap[p]=Math.round(e.amount*e.ratios[p]/totalR);});
 // rounding adjustment
-const diff=e.amount-Object.values(shareMap).reduce((a,b)=>a+b,0);
+var diff=e.amount-Object.values(shareMap).reduce(function(a,b){ return a+b; },0);
 if(diff&&sw.length)shareMap[sw[0]]+=diff;
-metaStr=sw.map(p=>p+’ ×’+e.ratios[p]+‘份 ₩’+shareMap[p].toLocaleString()).join(’　’);
+metaStr=sw.map(function(p){ return p+’ ×’+e.ratios[p]+‘份 ₩’+shareMap[p].toLocaleString(); }).join(’　’);
 } else {
-const sh=Math.round(e.amount/sw.length);
-sw.forEach(p=>{shareMap[p]=sh;});
-const diff=e.amount-sh*sw.length;
+var sh=Math.round(e.amount/sw.length);
+sw.forEach(function(p){shareMap[p]=sh;});
+var diff=e.amount-sh*sw.length;
 if(diff&&sw.length)shareMap[sw[0]]+=diff;
 metaStr=‘分帳：’+sw.join(’ / ‘)+’ · 每人 ₩’+sh.toLocaleString();
 }
@@ -1362,16 +1362,16 @@ lh+=’<div class="exp-row">’+
 ‘</div>’+
 ‘</div>’;
 paid[e.payer]+=e.amount;
-sw.forEach(p=>owed[p]+=shareMap[p]||0);
+sw.forEach(function(p){ return owed[p]+=shareMap[p]||0; });
 total+=e.amount;
 });
 le.innerHTML=lh;
-const tt=toTwd(total);
+var tt=toTwd(total);
 st.innerHTML=‘總花費　₩’+total.toLocaleString()+(tt?’<span>≈ NT$’+tt.toLocaleString()+’</span>’:’’);
-let rh=’’;
-[‘Una’,‘Doris’,‘Eagle’].forEach(p=>{
-const b=paid[p]-owed[p],t2=toTwd(Math.abs(b));
-const tn=t2?’ (≈NT$’+t2.toLocaleString()+’)’:’’ ;
+var rh=’’;
+[‘Una’,‘Doris’,‘Eagle’].forEach(function(p){
+var b=paid[p]-owed[p],t2=toTwd(Math.abs(b));
+var tn=t2?’ (≈NT$’+t2.toLocaleString()+’)’:’’ ;
 if(b>0)rh+=’<div class="sum-row"><span>’+p+’</span><span class="pos">應拿回 ₩’+b.toLocaleString()+tn+’</span></div>’;
 else if(b<0)rh+=’<div class="sum-row"><span>’+p+’</span><span class="neg">應拿出 ₩’+Math.abs(b).toLocaleString()+tn+’</span></div>’;
 else rh+=’<div class="sum-row"><span>’+p+’</span><span class="neu">無須補退</span></div>’;
@@ -1379,23 +1379,23 @@ else rh+=’<div class="sum-row"><span>’+p+’</span><span class="neu">無須�
 sr.innerHTML=rh;sw_.style.display=‘block’;
 
 // ── 結清方式（最少轉帳筆數）──
-const settle=document.getElementById(‘settle-wrap’);
-const settleRows=document.getElementById(‘settle-rows’);
+var settle=document.getElementById(‘settle-wrap’);
+var settleRows=document.getElementById(‘settle-rows’);
 // 計算每人淨額
-const bal={Una:paid.Una-owed.Una, Doris:paid.Doris-owed.Doris, Eagle:paid.Eagle-owed.Eagle};
+var bal={Una:paid.Una-owed.Una, Doris:paid.Doris-owed.Doris, Eagle:paid.Eagle-owed.Eagle};
 // 分成債主（正）和債務人（負）
-const creditors=Object.entries(bal).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
-const debtors=Object.entries(bal).filter(([,v])=>v<0).sort((a,b)=>a[1]-b[1]);
+var creditors=Object.entries(bal).filter(function([,v]){ return v>0; }).sort(function(a,b){ return b[1]-a[1]; });
+var debtors=Object.entries(bal).filter(function([,v]){ return v<0; }).sort(function(a,b){ return a[1]-b[1]; });
 if(!creditors.length){settle.style.display=‘none’;}
 else{
-let sh=’’;
-const cred=creditors.map(([n,v])=>({n,v}));
-const debt=debtors.map(([n,v])=>({n,v:-v}));
-let ci=0,di=0;
+var sh=’’;
+var cred=creditors.map(function(arr){ return {n:arr[0], v:arr[1]}; });
+var debt=debtors.map(function(arr){ return {n:arr[0], v:-arr[1]}; });
+var ci=0,di=0;
 while(ci<cred.length&&di<debt.length){
-const amt=Math.min(cred[ci].v,debt[di].v);
+var amt=Math.min(cred[ci].v,debt[di].v);
 if(amt>0){
-const tw=toTwd(amt);
+var tw=toTwd(amt);
 sh+=’<div class="sum-row">’+
 ‘<span><b>’+debt[di].n+’</b> 轉給 <b>’+cred[ci].n+’</b></span>’+
 ‘<span class="neg">₩’+amt.toLocaleString()+(tw?’ <span style="font-size:11px;color:var(--ink3)">≈NT$’+tw.toLocaleString()+’</span>’:’’)+
@@ -1409,11 +1409,11 @@ if(debt[di].v<1)di++;
 settleRows.innerHTML=sh||’<div class="sum-row"><span class="neu">已結清，無需轉帳</span></div>’;
 settle.style.display=‘block’;
 }
-const mx=Math.max(…Object.values(paid),1);
-let ch=’’;
-[‘Una’,‘Doris’,‘Eagle’].forEach(p=>{
-const pct=Math.round(paid[p]/mx*100),tw2=toTwd(paid[p]);
-const fc={Una:‘fu’,Doris:‘fd’,Eagle:‘fe’}[p];
+var mx=Math.max(…Object.values(paid),1);
+var ch=’’;
+[‘Una’,‘Doris’,‘Eagle’].forEach(function(p){
+var pct=Math.round(paid[p]/mx*100),tw2=toTwd(paid[p]);
+var fc={Una:‘fu’,Doris:‘fd’,Eagle:‘fe’}[p];
 ch+=’<div class="chart-lbl"><span>’+p+’</span><span>₩’+paid[p].toLocaleString()+(tw2?’ · NT$’+tw2.toLocaleString():’’)+’ </span></div>’+
 ‘<div class="chart-bg"><div class="chart-fill '+fc+'" style="width:'+pct+'%"></div></div>’;
 });
@@ -1452,7 +1452,7 @@ renderSchs(); renderExps(); renderSeats(); renderNotes();
 subscribeRealtime();
 });
 }
-init();
+window.onload = function(){ init(); };
 </script>
 
 </div><!-- /app-shell -->
