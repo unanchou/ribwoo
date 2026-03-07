@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -252,6 +253,22 @@ body.dark select option{background:var(--paper);color:var(--ink)}
 .seat-row:last-child{border-bottom:none}
 .ntag{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700;color:#fff;min-width:46px;text-align:center}
 .map-link{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--ink);font-size:13px;margin-bottom:8px;font-weight:500}
+/* ── NOTES ── */
+.notes-tabs-row{display:flex;align-items:center;gap:6px;margin-bottom:0}
+.notes-tabs{display:flex;gap:4px;flex:1;flex-wrap:wrap}
+.notes-tab{padding:7px 14px;border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--cream);font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.notes-tab.active{background:var(--paper);color:var(--sage);border-color:var(--line)}
+.notes-tab-del{font-size:10px;color:var(--ink3);opacity:.5;padding:0 2px;line-height:1;transition:.15s}
+.notes-tab-del:hover{opacity:1;color:var(--rust)}
+.notes-add-tab{background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:16px;color:var(--ink3);cursor:pointer;flex-shrink:0;transition:.15s}
+.notes-add-tab:hover{color:var(--sage);border-color:var(--sage)}
+.notes-panel{display:none;background:var(--paper);border:1px solid var(--line);border-radius:0 8px 8px 8px;overflow:hidden}
+.notes-panel.active{display:block}
+.notes-title-input{width:100%;padding:10px 14px;border:none;border-bottom:1px solid var(--line);background:transparent;font-family:'Noto Serif TC',serif;font-size:15px;font-weight:700;color:var(--ink);outline:none}
+.notes-title-input::placeholder{color:var(--ink3)}
+.notes-body{width:100%;min-height:180px;padding:12px 14px;border:none;background:transparent;font-family:'Noto Sans TC',sans-serif;font-size:14px;color:var(--ink);line-height:1.8;outline:none;resize:vertical}
+.notes-body::placeholder{color:var(--ink3)}
+.notes-footer{padding:6px 14px;font-size:11px;color:var(--ink3);border-top:1px solid var(--line);text-align:right}
 /* ── TAB BAR ── */
 /* ── TAB BAR：固定底部 ── */
 .tabbar{
@@ -288,9 +305,8 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
   <button class="tabbtn" onclick="swTab('seats',this)"><span class="ic">🎫</span>座位</button>
 </div>
 
-
-
 <!-- HEADER -->
+
 <div class="site-header">
   <div class="header-top">
     <div class="header-left">
@@ -316,6 +332,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 </div>
 
 <!-- COUNTDOWN -->
+
 <div class="timer-strip">
   <div class="timer-main">
     <div class="t-label">countdown</div>
@@ -328,174 +345,179 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 <div class="wrap">
 
 <!-- ═══ PAGE: SCHEDULE ═══ -->
+
 <div id="page-schedule" class="page active">
   <div class="sec-hd"><span class="sec-en">itinerary</span><span class="sec-rule"></span><span class="sec-zh">行程時間表</span></div>
   <div class="tl" id="tl-root">
 
-    <!-- 3/20 -->
-    <div class="tl-day open" id="d0320">
-      <div class="tl-day-hd" onclick="togDay('d0320')">
-        <div class="tl-day-date-group"><span class="tl-day-date-num">3/20</span><span class="tl-day-dow">五</span></div>
-        <div class="tl-day-divider"></div>
-        <div class="tl-day-name">啟程</div>
-        <span class="tl-chev">▼</span>
-      </div>
-      <div class="tl-panel">
-        <div class="tl-item">
-          <div class="tl-tc" data-eid="bi1"><span class="tl-time">15:15</span><span class="tl-ampm">TST</span></div>
-          <div class="tl-gap"></div>
-          <div class="tl-body">
-            <div class="tl-cat">出發</div>
-            <div class="tl-title">Una &amp; Eagle 起飛</div>
-            <div class="fl-wrap"><div class="fl-card">
-              <div class="fl-hd"><div><div class="fl-no">BR 160</div><div class="fl-al">EVA AIR · B787-9 · 經濟艙</div></div><div class="fl-pax"><span class="ptag pu">Una</span><span class="ptag pe">Eagle</span></div></div>
-              <div class="fl-route">
-                <div class="fl-port"><div class="fl-code">TPE</div><div class="fl-ts">15:15</div><div class="fl-t1">T2</div></div>
-                <div class="fl-mid"><div class="fl-dur">2h 30min</div><div class="fl-arr"><div class="fl-arrline"></div><div class="fl-arrhd">▶</div></div><div class="fl-plane">✈</div></div>
-                <div class="fl-port"><div class="fl-code">ICN</div><div class="fl-ts">18:45</div><div class="fl-t1">T1</div></div>
-              </div>
-            </div></div>
-          <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi1',this)">✏ 修改</button></div></div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-tc" data-eid="bi2"><span class="tl-time">18:45</span><span class="tl-ampm">KST</span></div>
-          <div class="tl-gap"></div>
-          <div class="tl-body">
-            <div class="tl-cat">抵達</div>
-            <div class="tl-title">Una &amp; Eagle 抵達仁川</div>
-            <div class="tl-desc">BR160 落地 T1。Una 在入境後於 1F 購買 <strong>WOWPASS</strong>，儲值後可用於交通 &amp; 消費。</div>
-          <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi2',this)">✏ 修改</button></div></div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-tc" data-eid="bi3"><span class="tl-time">20:00</span><span class="tl-ampm">台灣</span></div>
-          <div class="tl-gap"></div>
-          <div class="tl-body">
-            <div class="tl-cat">出發</div>
-            <div class="tl-title">Doris 起飛</div>
-            <div class="fl-wrap"><div class="fl-card">
-              <div class="fl-hd"><div><div class="fl-no">IT 602</div><div class="fl-al">Tigerair Taiwan</div></div><div class="fl-pax"><span class="ptag pd">Doris</span></div></div>
-              <div class="fl-route">
-                <div class="fl-port"><div class="fl-code">TPE</div><div class="fl-ts">20:00</div><div class="fl-t1">T1</div></div>
-                <div class="fl-mid"><div class="fl-dur">2h 30min</div><div class="fl-arr"><div class="fl-arrline"></div><div class="fl-arrhd">▶</div></div><div class="fl-plane">✈</div></div>
-                <div class="fl-port"><div class="fl-code">ICN</div><div class="fl-ts">23:30</div><div class="fl-t1">T1</div></div>
-              </div>
-            </div></div>
-          <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi3',this)">✏ 修改</button></div></div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-tc" data-eid="bi4"><span class="tl-time">21:00</span><span class="tl-ampm">KST</span></div>
-          <div class="tl-gap"></div>
-          <div class="tl-body">
-            <div class="tl-cat">入住</div>
-            <div class="tl-title">Una &amp; Eagle 入住</div>
-            <div class="tl-desc">搭 AREX 至弘大入口站步行前往（約 40 分鐘）。</div>
-            <div class="acc-card">
-              <div class="acc-top"><div class="acc-icon">🏠</div><div><div class="acc-name">麻浦區住所</div><div class="acc-en">World Cup buk-ro 6-gil · Mapo-gu</div></div></div>
-              <div class="acc-addr"><div>19-6, World Cup buk-ro 6-gil, Mapo-gu, Seoul</div><div style="color:var(--ink3);margin-top:2px">首爾特別市麻浦區連南洞 570-35</div></div>
-              <a class="acc-map" href="https://map.naver.com/p/search/서울특별시 마포구 연남동 570-35" target="_blank">🗺️ 開啟地圖導航</a>
-            </div>
-          <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi4',this)">✏ 修改</button></div></div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-tc" data-eid="bi5"><span class="tl-time">23:30</span><span class="tl-ampm">KST</span></div>
-          <div class="tl-gap"></div>
-          <div class="tl-body">
-            <div class="tl-cat">抵達</div>
-            <div class="tl-title">Doris 抵達 &amp; 入住</div>
-            <div class="tl-desc">IT602 落地仁川 T1，搭 AREX 至弘大入口站前往住所。</div>
-          <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi5',this)">✏ 修改</button></div></div>
-        </div>
-      </div>
+```
+<!-- 3/20 -->
+<div class="tl-day open" id="d0320">
+  <div class="tl-day-hd" onclick="togDay('d0320')">
+    <div class="tl-day-date-group"><span class="tl-day-date-num">3/20</span><span class="tl-day-dow">五</span></div>
+    <div class="tl-day-divider"></div>
+    <div class="tl-day-name">啟程</div>
+    <span class="tl-chev">▼</span>
+  </div>
+  <div class="tl-panel">
+    <div class="tl-item">
+      <div class="tl-tc" data-eid="bi1"><span class="tl-time">15:15</span><span class="tl-ampm">TST</span></div>
+      <div class="tl-gap"></div>
+      <div class="tl-body">
+        <div class="tl-cat">出發</div>
+        <div class="tl-title">Una &amp; Eagle 起飛</div>
+        <div class="fl-wrap"><div class="fl-card">
+          <div class="fl-hd"><div><div class="fl-no">BR 160</div><div class="fl-al">EVA AIR · B787-9 · 經濟艙</div></div><div class="fl-pax"><span class="ptag pu">Una</span><span class="ptag pe">Eagle</span></div></div>
+          <div class="fl-route">
+            <div class="fl-port"><div class="fl-code">TPE</div><div class="fl-ts">15:15</div><div class="fl-t1">T2</div></div>
+            <div class="fl-mid"><div class="fl-dur">2h 30min</div><div class="fl-arr"><div class="fl-arrline"></div><div class="fl-arrhd">▶</div></div><div class="fl-plane">✈</div></div>
+            <div class="fl-port"><div class="fl-code">ICN</div><div class="fl-ts">18:45</div><div class="fl-t1">T1</div></div>
+          </div>
+        </div></div>
+      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi1',this)">✏ 修改</button></div></div>
     </div>
-
-    <!-- 3/21 -->
-    <div class="tl-day" id="d0321">
-      <div class="tl-day-hd" onclick="togDay('d0321')">
-        <div class="tl-day-date-group"><span class="tl-day-date-num">3/21</span><span class="tl-day-dow">六</span></div>
-        <div class="tl-day-divider"></div>
-        <div class="tl-day-name">見面會 Day 1</div>
-        <span class="tl-chev">▼</span>
-      </div>
-      <div class="tl-panel">
-        <div class="tl-item show-it">
-          <div class="tl-tc" data-eid="bi6"><span class="tl-time">14:00</span><span class="tl-ampm">KST</span></div>
-          <div class="tl-gap"></div>
-          <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">第一場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi6',this)">✏ 修改</button></div></div>
-        </div>
-        <div class="tl-item show-it">
-          <div class="tl-tc" data-eid="bi7"><span class="tl-time">19:00</span><span class="tl-ampm">KST</span></div>
-          <div class="tl-gap"></div>
-          <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">第二場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi7',this)">✏ 修改</button></div></div>
-        </div>
-      </div>
+    <div class="tl-item">
+      <div class="tl-tc" data-eid="bi2"><span class="tl-time">18:45</span><span class="tl-ampm">KST</span></div>
+      <div class="tl-gap"></div>
+      <div class="tl-body">
+        <div class="tl-cat">抵達</div>
+        <div class="tl-title">Una &amp; Eagle 抵達仁川</div>
+        <div class="tl-desc">BR160 落地 T1。Una 在入境後於 1F 購買 <strong>WOWPASS</strong>，儲值後可用於交通 &amp; 消費。</div>
+      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi2',this)">✏ 修改</button></div></div>
     </div>
-
-    <!-- 3/22 -->
-    <div class="tl-day" id="d0322">
-      <div class="tl-day-hd" onclick="togDay('d0322')">
-        <div class="tl-day-date-group"><span class="tl-day-date-num">3/22</span><span class="tl-day-dow">日</span></div>
-        <div class="tl-day-divider"></div>
-        <div class="tl-day-name">見面會 Day 2</div>
-        <span class="tl-chev">▼</span>
-      </div>
-      <div class="tl-panel">
-        <div class="tl-item show-it">
-          <div class="tl-tc" data-eid="bi8"><span class="tl-time">14:00</span><span class="tl-ampm">KST</span></div>
-          <div class="tl-gap"></div>
-          <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">最終場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi8',this)">✏ 修改</button></div></div>
-        </div>
-        <div class="tl-item">
-          <div class="tl-tc" data-eid="bi9"><span class="tl-time">00:30</span><span class="tl-ampm">＊3/23</span></div>
-          <div class="tl-gap"></div>
-          <div class="tl-body">
-            <div class="tl-cat">回程</div>
-            <div class="tl-title">Doris 回台</div>
-            <div class="tl-desc">凌晨 00:30（技術上為 3/23），表演結束後需直接前往機場。</div>
-            <div class="fl-wrap"><div class="fl-card">
-              <div class="fl-hd"><div><div class="fl-no">IT 603</div><div class="fl-al">Tigerair Taiwan</div></div><div class="fl-pax"><span class="ptag pd">Doris</span></div></div>
-              <div class="fl-route">
-                <div class="fl-port"><div class="fl-code">ICN</div><div class="fl-ts">00:30</div><div class="fl-t1">T1</div></div>
-                <div class="fl-mid"><div class="fl-dur">2h 45min</div><div class="fl-arr"><div class="fl-arrline"></div><div class="fl-arrhd">▶</div></div><div class="fl-plane">✈</div></div>
-                <div class="fl-port"><div class="fl-code">TPE</div><div class="fl-ts">02:15</div><div class="fl-t1">T1</div></div>
-              </div>
-            </div></div>
-          <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi9',this)">✏ 修改</button></div></div>
-        </div>
-      </div>
+    <div class="tl-item">
+      <div class="tl-tc" data-eid="bi3"><span class="tl-time">20:00</span><span class="tl-ampm">台灣</span></div>
+      <div class="tl-gap"></div>
+      <div class="tl-body">
+        <div class="tl-cat">出發</div>
+        <div class="tl-title">Doris 起飛</div>
+        <div class="fl-wrap"><div class="fl-card">
+          <div class="fl-hd"><div><div class="fl-no">IT 602</div><div class="fl-al">Tigerair Taiwan</div></div><div class="fl-pax"><span class="ptag pd">Doris</span></div></div>
+          <div class="fl-route">
+            <div class="fl-port"><div class="fl-code">TPE</div><div class="fl-ts">20:00</div><div class="fl-t1">T1</div></div>
+            <div class="fl-mid"><div class="fl-dur">2h 30min</div><div class="fl-arr"><div class="fl-arrline"></div><div class="fl-arrhd">▶</div></div><div class="fl-plane">✈</div></div>
+            <div class="fl-port"><div class="fl-code">ICN</div><div class="fl-ts">23:30</div><div class="fl-t1">T1</div></div>
+          </div>
+        </div></div>
+      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi3',this)">✏ 修改</button></div></div>
     </div>
-
-    <!-- 3/23 -->
-    <div class="tl-day" id="d0323">
-      <div class="tl-day-hd" onclick="togDay('d0323')">
-        <div class="tl-day-date-group"><span class="tl-day-date-num">3/23</span><span class="tl-day-dow">一</span></div>
-        <div class="tl-day-divider"></div>
-        <div class="tl-day-name">返台</div>
-        <span class="tl-chev">▼</span>
-      </div>
-      <div class="tl-panel">
-        <div class="tl-item">
-          <div class="tl-tc" data-eid="bi10"><span class="tl-time">11:40</span><span class="tl-ampm">KST</span></div>
-          <div class="tl-gap"></div>
-          <div class="tl-body">
-            <div class="tl-cat">回程</div>
-            <div class="tl-title">Una &amp; Eagle 回台</div>
-            <div class="fl-wrap"><div class="fl-card">
-              <div class="fl-hd"><div><div class="fl-no">BR 169</div><div class="fl-al">EVA AIR · B787-10 · 經濟艙</div></div><div class="fl-pax"><span class="ptag pu">Una</span><span class="ptag pe">Eagle</span></div></div>
-              <div class="fl-route">
-                <div class="fl-port"><div class="fl-code">ICN</div><div class="fl-ts">11:40</div><div class="fl-t1">T1</div></div>
-                <div class="fl-mid"><div class="fl-dur">2h 50min</div><div class="fl-arr"><div class="fl-arrline"></div><div class="fl-arrhd">▶</div></div><div class="fl-plane">✈</div></div>
-                <div class="fl-port"><div class="fl-code">TPE</div><div class="fl-ts">13:30</div><div class="fl-t1">T2</div></div>
-              </div>
-            </div></div>
-          <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi10',this)">✏ 修改</button></div></div>
+    <div class="tl-item">
+      <div class="tl-tc" data-eid="bi4"><span class="tl-time">21:00</span><span class="tl-ampm">KST</span></div>
+      <div class="tl-gap"></div>
+      <div class="tl-body">
+        <div class="tl-cat">入住</div>
+        <div class="tl-title">Una &amp; Eagle 入住</div>
+        <div class="tl-desc">搭 AREX 至弘大入口站步行前往（約 40 分鐘）。</div>
+        <div class="acc-card">
+          <div class="acc-top"><div class="acc-icon">🏠</div><div><div class="acc-name">麻浦區住所</div><div class="acc-en">World Cup buk-ro 6-gil · Mapo-gu</div></div></div>
+          <div class="acc-addr"><div>19-6, World Cup buk-ro 6-gil, Mapo-gu, Seoul</div><div style="color:var(--ink3);margin-top:2px">首爾特別市麻浦區連南洞 570-35</div></div>
+          <a class="acc-map" href="https://map.naver.com/p/search/서울특별시 마포구 연남동 570-35" target="_blank">🗺️ 開啟地圖導航</a>
         </div>
-      </div>
+      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi4',this)">✏ 修改</button></div></div>
     </div>
+    <div class="tl-item">
+      <div class="tl-tc" data-eid="bi5"><span class="tl-time">23:30</span><span class="tl-ampm">KST</span></div>
+      <div class="tl-gap"></div>
+      <div class="tl-body">
+        <div class="tl-cat">抵達</div>
+        <div class="tl-title">Doris 抵達 &amp; 入住</div>
+        <div class="tl-desc">IT602 落地仁川 T1，搭 AREX 至弘大入口站前往住所。</div>
+      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi5',this)">✏ 修改</button></div></div>
+    </div>
+  </div>
+</div>
 
-    <div id="custom-container"></div>
+<!-- 3/21 -->
+<div class="tl-day" id="d0321">
+  <div class="tl-day-hd" onclick="togDay('d0321')">
+    <div class="tl-day-date-group"><span class="tl-day-date-num">3/21</span><span class="tl-day-dow">六</span></div>
+    <div class="tl-day-divider"></div>
+    <div class="tl-day-name">見面會 Day 1</div>
+    <span class="tl-chev">▼</span>
+  </div>
+  <div class="tl-panel">
+    <div class="tl-item show-it">
+      <div class="tl-tc" data-eid="bi6"><span class="tl-time">14:00</span><span class="tl-ampm">KST</span></div>
+      <div class="tl-gap"></div>
+      <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">第一場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi6',this)">✏ 修改</button></div></div>
+    </div>
+    <div class="tl-item show-it">
+      <div class="tl-tc" data-eid="bi7"><span class="tl-time">19:00</span><span class="tl-ampm">KST</span></div>
+      <div class="tl-gap"></div>
+      <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">第二場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi7',this)">✏ 修改</button></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3/22 -->
+<div class="tl-day" id="d0322">
+  <div class="tl-day-hd" onclick="togDay('d0322')">
+    <div class="tl-day-date-group"><span class="tl-day-date-num">3/22</span><span class="tl-day-dow">日</span></div>
+    <div class="tl-day-divider"></div>
+    <div class="tl-day-name">見面會 Day 2</div>
+    <span class="tl-chev">▼</span>
+  </div>
+  <div class="tl-panel">
+    <div class="tl-item show-it">
+      <div class="tl-tc" data-eid="bi8"><span class="tl-time">14:00</span><span class="tl-ampm">KST</span></div>
+      <div class="tl-gap"></div>
+      <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">最終場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi8',this)">✏ 修改</button></div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-tc" data-eid="bi9"><span class="tl-time">00:30</span><span class="tl-ampm">＊3/23</span></div>
+      <div class="tl-gap"></div>
+      <div class="tl-body">
+        <div class="tl-cat">回程</div>
+        <div class="tl-title">Doris 回台</div>
+        <div class="tl-desc">凌晨 00:30（技術上為 3/23），表演結束後需直接前往機場。</div>
+        <div class="fl-wrap"><div class="fl-card">
+          <div class="fl-hd"><div><div class="fl-no">IT 603</div><div class="fl-al">Tigerair Taiwan</div></div><div class="fl-pax"><span class="ptag pd">Doris</span></div></div>
+          <div class="fl-route">
+            <div class="fl-port"><div class="fl-code">ICN</div><div class="fl-ts">00:30</div><div class="fl-t1">T1</div></div>
+            <div class="fl-mid"><div class="fl-dur">2h 45min</div><div class="fl-arr"><div class="fl-arrline"></div><div class="fl-arrhd">▶</div></div><div class="fl-plane">✈</div></div>
+            <div class="fl-port"><div class="fl-code">TPE</div><div class="fl-ts">02:15</div><div class="fl-t1">T1</div></div>
+          </div>
+        </div></div>
+      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi9',this)">✏ 修改</button></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3/23 -->
+<div class="tl-day" id="d0323">
+  <div class="tl-day-hd" onclick="togDay('d0323')">
+    <div class="tl-day-date-group"><span class="tl-day-date-num">3/23</span><span class="tl-day-dow">一</span></div>
+    <div class="tl-day-divider"></div>
+    <div class="tl-day-name">返台</div>
+    <span class="tl-chev">▼</span>
+  </div>
+  <div class="tl-panel">
+    <div class="tl-item">
+      <div class="tl-tc" data-eid="bi10"><span class="tl-time">11:40</span><span class="tl-ampm">KST</span></div>
+      <div class="tl-gap"></div>
+      <div class="tl-body">
+        <div class="tl-cat">回程</div>
+        <div class="tl-title">Una &amp; Eagle 回台</div>
+        <div class="fl-wrap"><div class="fl-card">
+          <div class="fl-hd"><div><div class="fl-no">BR 169</div><div class="fl-al">EVA AIR · B787-10 · 經濟艙</div></div><div class="fl-pax"><span class="ptag pu">Una</span><span class="ptag pe">Eagle</span></div></div>
+          <div class="fl-route">
+            <div class="fl-port"><div class="fl-code">ICN</div><div class="fl-ts">11:40</div><div class="fl-t1">T1</div></div>
+            <div class="fl-mid"><div class="fl-dur">2h 50min</div><div class="fl-arr"><div class="fl-arrline"></div><div class="fl-arrhd">▶</div></div><div class="fl-plane">✈</div></div>
+            <div class="fl-port"><div class="fl-code">TPE</div><div class="fl-ts">13:30</div><div class="fl-t1">T2</div></div>
+          </div>
+        </div></div>
+      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi10',this)">✏ 修改</button></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="custom-container"></div>
+```
+
   </div><!-- /tl -->
 
   <!-- Add custom schedule -->
+
   <div class="sec-hd"><span class="sec-en">add</span><span class="sec-rule"></span><span class="sec-zh">新增臨時行程</span></div>
   <div class="card">
     <div class="card-title">schedule · 行程</div>
@@ -525,6 +547,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 </div><!-- /page-schedule -->
 
 <!-- ═══ PAGE: EXPENSES ═══ -->
+
 <div id="page-expenses" class="page">
   <div class="sec-hd"><span class="sec-en">record</span><span class="sec-rule"></span><span class="sec-zh">記一筆</span></div>
   <div class="card">
@@ -581,6 +604,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 </div><!-- /page-expenses -->
 
 <!-- ═══ PAGE: SEATS ═══ -->
+
 <div id="page-seats" class="page">
   <div class="sec-hd"><span class="sec-en">seats</span><span class="sec-rule"></span><span class="sec-zh">座位資訊</span></div>
   <div class="stabs">
@@ -590,14 +614,21 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
   </div>
   <div id="seats-list"></div>
   <a class="map-link" href="https://map.naver.com/p/search/장충체육관" target="_blank">🗺️ 查看獎忠體育館地圖</a>
-</div><!-- /page-seats -->
 
+  <!-- 備忘錄 -->
+
+  <div class="sec-hd"><span class="sec-en">notes</span><span class="sec-rule"></span><span class="sec-zh">備忘錄</span></div>
+  <div class="notes-tabs-row">
+    <div class="notes-tabs" id="notes-tabs"></div>
+    <button class="notes-add-tab" onclick="addNoteTab()" title="新增頁面">＋</button>
+  </div>
+  <div id="notes-panels"></div>
+</div><!-- /page-seats -->
 
 </div><!-- /wrap -->
 
-
-
 <!-- Builtin schedule edit modal -->
+
 <div class="mbg" id="builtin-edit-modal">
   <div class="modal-sheet">
     <h3>修改行程</h3>
@@ -621,6 +652,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 </div>
 
 <!-- Seat edit modal -->
+
 <div class="mbg" id="seat-modal">
   <div class="modal-sheet">
     <h3 id="seat-modal-title">修改座位</h3>
@@ -635,6 +667,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 </div>
 
 <!-- Edit schedule modal -->
+
 <div class="mbg" id="edit-modal">
   <div class="modal-sheet">
     <h3>修改行程</h3>
@@ -646,6 +679,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 </div>
 
 <!-- Quick expense modal (FAB) -->
+
 <div class="mbg" id="qexp-modal">
   <div class="modal-sheet">
     <h3>💸 快速記帳</h3>
@@ -679,7 +713,6 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
     </div>
   </div>
 </div>
-
 
 <script>
 // ══════════════════════════════════════════
@@ -746,6 +779,7 @@ async function pollSync() {
         if (row.key === 'seoul_exps') { exps = val; renderExps(); }
         if (row.key === 'seoul_seats') { Object.assign(seatOverrides, val); renderSeats(); }
         if (row.key === 'seoul_builtin_edits') { builtinEdits = val; applyAllBuiltinEdits(); }
+        if (row.key === 'seoul_notes') { notes = val; renderNotes(); }
         if (row.key === 'seoul_rate') {
           document.getElementById('rate').value = val;
           renderExps();
@@ -823,7 +857,7 @@ function swTab(id,btn){
   btn.classList.add('active');
   // Show FAB only on schedule tab
   
-  if(id==='seats')renderSeats();
+  if(id==='seats'){renderSeats();renderNotes();}
 }
 // ── TIMELINE ──
 function togDay(id){document.getElementById(id).classList.toggle('open')}
@@ -918,440 +952,497 @@ document.getElementById('builtin-edit-modal').addEventListener('click', function
   if (e.target === this) closeBuiltinEdit();
 });
 
+
+// ── NOTES ──
+let notes = []; // [{id, title, body}]
+let noteCurIdx = 0;
+let noteSaveTimer = null;
+
+function renderNotes() {
+  const tabsEl = document.getElementById('notes-tabs');
+  const panelsEl = document.getElementById('notes-panels');
+  if (!tabsEl || !panelsEl) return;
+
+  if (!notes.length) {
+    notes = [{id: Date.now(), title: '備忘 1', body: ''}];
+  }
+
+  tabsEl.innerHTML = notes.map((n, i) => `
+    <button class="notes-tab${i===noteCurIdx?' active':''}" onclick="switchNote(${i})">
+      ${n.title||'備忘 '+(i+1)}
+      <span class="notes-tab-del" onclick="delNoteTab(event,${i})">✕</span>
+    </button>`).join('');
+
+  panelsEl.innerHTML = notes.map((n, i) => `
+    <div class="notes-panel${i===noteCurIdx?' active':''}" id="np${i}">
+      <input class="notes-title-input" placeholder="頁面標題" value="${escHtml(n.title)}"
+        oninput="noteInput(${i},'title',this.value)">
+      <textarea class="notes-body" placeholder="在這裡記下任何事情…"
+        oninput="noteInput(${i},'body',this.value)">${escHtml(n.body)}</textarea>
+
+```
+  <div class="notes-footer" id="nf${i}"></div>
+</div>`).join('');
+```
+
+}
+
+function escHtml(s) {
+return (s||’’).replace(/&/g,’&’).replace(/</g,’<’).replace(/>/g,’>’).replace(/”/g,’"’);
+}
+
+function switchNote(i) {
+noteCurIdx = i;
+renderNotes();
+}
+
+function addNoteTab() {
+notes.push({id: Date.now(), title: ’備忘 ’+(notes.length+1), body: ‘’});
+noteCurIdx = notes.length - 1;
+renderNotes();
+sv(‘seoul_notes’, notes);
+}
+
+function delNoteTab(e, i) {
+e.stopPropagation();
+if (notes.length <= 1) { alert(‘至少保留一頁’); return; }
+if (!confirm(‘刪除「’+(notes[i].title||‘此頁’)+’」？’)) return;
+notes.splice(i, 1);
+if (noteCurIdx >= notes.length) noteCurIdx = notes.length - 1;
+renderNotes();
+sv(‘seoul_notes’, notes);
+}
+
+function noteInput(i, field, val) {
+notes[i][field] = val;
+// 更新頁籤標題即時顯示
+if (field === ‘title’) {
+const tabs = document.querySelectorAll(’.notes-tab’);
+if (tabs[i]) tabs[i].childNodes[0].textContent = val || (’備忘 ’+(i+1));
+}
+// debounce 存檔
+const footer = document.getElementById(‘nf’+i);
+if (footer) footer.textContent = ‘儲存中…’;
+clearTimeout(noteSaveTimer);
+noteSaveTimer = setTimeout(() => {
+sv(‘seoul_notes’, notes);
+if (footer) footer.textContent = ‘已儲存 ✓’;
+setTimeout(() => { if (footer) footer.textContent = ‘’; }, 2000);
+}, 800);
+}
+
 // ── SEATS ──
 const SEAT_SHOWS=[
-  {label:'3/21 14:00 第一場', people:[
-    {name:'Una',  color:'una',   seat:'2F · P2 · Row 3 · Seat 37'},
-    {name:'Eagle',color:'eagle', seat:'2F · O2 · Row 5 · Seat 68'},
-    {name:'Doris',color:'doris', seat:'2F · O2 · Row 5 · Seat 68'},
-  ]},
-  {label:'3/21 19:00 第二場', people:[
-    {name:'Una',  color:'una',   seat:'1F · C · Row 3 · Seat 4'},
-    {name:'Eagle',color:'eagle', seat:'1F · C · Row 5 · Seat 10'},
-    {name:'Doris',color:'doris', seat:'2F · A2 · Row 1 · Seat 6'},
-  ]},
-  {label:'3/22 14:00 最終場', people:[
-    {name:'Una',  color:'una',   seat:'1F · A · Row 4 · Seat 6'},
-    {name:'Eagle',color:'eagle', seat:'2F · P2 · Row 2 · Seat 26'},
-    {name:'Doris',color:'doris', seat:'1F · C · Row 1'},
-  ]},
+{label:‘3/21 14:00 第一場’, people:[
+{name:‘Una’,  color:‘una’,   seat:‘2F · P2 · Row 3 · Seat 37’},
+{name:‘Eagle’,color:‘eagle’, seat:‘2F · O2 · Row 5 · Seat 68’},
+{name:‘Doris’,color:‘doris’, seat:‘2F · O2 · Row 5 · Seat 68’},
+]},
+{label:‘3/21 19:00 第二場’, people:[
+{name:‘Una’,  color:‘una’,   seat:‘1F · C · Row 3 · Seat 4’},
+{name:‘Eagle’,color:‘eagle’, seat:‘1F · C · Row 5 · Seat 10’},
+{name:‘Doris’,color:‘doris’, seat:‘2F · A2 · Row 1 · Seat 6’},
+]},
+{label:‘3/22 14:00 最終場’, people:[
+{name:‘Una’,  color:‘una’,   seat:‘1F · A · Row 4 · Seat 6’},
+{name:‘Eagle’,color:‘eagle’, seat:‘2F · P2 · Row 2 · Seat 26’},
+{name:‘Doris’,color:‘doris’, seat:‘1F · C · Row 1’},
+]},
 ];
 // Load saved overrides from localStorage
 const seatOverrides={};
 function getSeat(si,pi){
-  const key=si+'-'+pi;
-  return seatOverrides[key]||SEAT_SHOWS[si].people[pi].seat;
+const key=si+’-’+pi;
+return seatOverrides[key]||SEAT_SHOWS[si].people[pi].seat;
 }
 function saveSeatOverride(si,pi,val){
-  seatOverrides[si+'-'+pi]=val;
-  sv('seoul_seats', seatOverrides);
+seatOverrides[si+’-’+pi]=val;
+sv(‘seoul_seats’, seatOverrides);
 }
 let curShowIdx=0;
 function renderSeats(){
-  const si=curShowIdx;
-  const show=SEAT_SHOWS[si];
-  let html='<div style="background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px 15px;margin-bottom:10px">';
-  show.people.forEach((p,pi)=>{
-    html+=`<div class="seat-row">
-      <span class="ntag" style="background:var(--${p.color})">${p.name}</span>
-      <span style="flex:1">${getSeat(si,pi)}</span>
-      <button class="tl-btn" onclick="openSeatModal(${si},${pi})" style="flex-shrink:0;margin-left:8px">✏</button>
-    </div>`;
-  });
-  html+='</div>';
-  document.getElementById('seats-list').innerHTML=html;
+const si=curShowIdx;
+const show=SEAT_SHOWS[si];
+let html=’<div style="background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px 15px;margin-bottom:10px">’;
+show.people.forEach((p,pi)=>{
+html+=`<div class="seat-row"> <span class="ntag" style="background:var(--${p.color})">${p.name}</span> <span style="flex:1">${getSeat(si,pi)}</span> <button class="tl-btn" onclick="openSeatModal(${si},${pi})" style="flex-shrink:0;margin-left:8px">✏</button> </div>`;
+});
+html+=’</div>’;
+document.getElementById(‘seats-list’).innerHTML=html;
 }
 function swShow(i,btn){
-  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  curShowIdx=i;
-  renderSeats();
+document.querySelectorAll(’.stab’).forEach(b=>b.classList.remove(‘active’));
+btn.classList.add(‘active’);
+curShowIdx=i;
+renderSeats();
 }
 function openSeatModal(si,pi){
-  document.getElementById('seat-show-idx').value=si;
-  document.getElementById('seat-person-idx').value=pi;
-  document.getElementById('seat-val').value=getSeat(si,pi);
-  const p=SEAT_SHOWS[si].people[pi];
-  document.getElementById('seat-modal-title').textContent=p.name+' · '+SEAT_SHOWS[si].label.split(' ')[2];
-  document.getElementById('seat-modal').classList.add('on');
-  setTimeout(()=>document.getElementById('seat-val').focus(),100);
+document.getElementById(‘seat-show-idx’).value=si;
+document.getElementById(‘seat-person-idx’).value=pi;
+document.getElementById(‘seat-val’).value=getSeat(si,pi);
+const p=SEAT_SHOWS[si].people[pi];
+document.getElementById(‘seat-modal-title’).textContent=p.name+’ · ‘+SEAT_SHOWS[si].label.split(’ ’)[2];
+document.getElementById(‘seat-modal’).classList.add(‘on’);
+setTimeout(()=>document.getElementById(‘seat-val’).focus(),100);
 }
-function closeSeatModal(){document.getElementById('seat-modal').classList.remove('on')}
+function closeSeatModal(){document.getElementById(‘seat-modal’).classList.remove(‘on’)}
 function saveSeat(){
-  const si=+document.getElementById('seat-show-idx').value;
-  const pi=+document.getElementById('seat-person-idx').value;
-  const val=document.getElementById('seat-val').value.trim();
-  if(!val){alert('請輸入座位資訊');return}
-  saveSeatOverride(si,pi,val);
-  closeSeatModal();
-  renderSeats();
+const si=+document.getElementById(‘seat-show-idx’).value;
+const pi=+document.getElementById(‘seat-person-idx’).value;
+const val=document.getElementById(‘seat-val’).value.trim();
+if(!val){alert(‘請輸入座位資訊’);return}
+saveSeatOverride(si,pi,val);
+closeSeatModal();
+renderSeats();
 }
-document.getElementById('seat-modal').addEventListener('click',function(e){if(e.target===this)closeSeatModal()});
+document.getElementById(‘seat-modal’).addEventListener(‘click’,function(e){if(e.target===this)closeSeatModal()});
 
 // ── 行程附帶記帳 ──
-let expCur='krw';
+let expCur=‘krw’;
 function setExpCur(cur,btn){
-  expCur=cur;
-  document.querySelectorAll('#exp-cur-krw,#exp-cur-twd').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('exp-amt').placeholder=cur==='krw'?'金額（₩ 韓元）':'金額（NT$ 台幣）';
+expCur=cur;
+document.querySelectorAll(’#exp-cur-krw,#exp-cur-twd’).forEach(b=>b.classList.remove(‘active’));
+btn.classList.add(‘active’);
+document.getElementById(‘exp-amt’).placeholder=cur===‘krw’?‘金額（₩ 韓元）’:‘金額（NT$ 台幣）’;
 }
 function updSp(n){
-  const c=document.getElementById('sp-'+n),l=document.getElementById('lb-'+n);
-  c.checked?l.classList.add('s'+n[0].toLowerCase()):l.classList.remove('s'+n[0].toLowerCase());
+const c=document.getElementById(‘sp-’+n),l=document.getElementById(‘lb-’+n);
+c.checked?l.classList.add(‘s’+n[0].toLowerCase()):l.classList.remove(‘s’+n[0].toLowerCase());
 }
 function togExpF(){
-  const on=document.getElementById('tog-exp').checked;
-  document.getElementById('exp-fields').style.display=on?'block':'none';
-  if(on){
-    const d=document.getElementById('new-desc').value.trim();
-    // auto-fill amount field focus
-    document.getElementById('exp-amt').focus();
-  }
+const on=document.getElementById(‘tog-exp’).checked;
+document.getElementById(‘exp-fields’).style.display=on?‘block’:‘none’;
+if(on){
+const d=document.getElementById(‘new-desc’).value.trim();
+// auto-fill amount field focus
+document.getElementById(‘exp-amt’).focus();
+}
 }
 
 // ── CUSTOM SCHEDULE ──
 let schs=[];
-const DATE_TO_DAY={'2026-03-20':'d0320','2026-03-21':'d0321','2026-03-22':'d0322','2026-03-23':'d0323'};
-const toMins=t=>{if(!t||!t.includes(':'))return 9999;const[h,m]=t.split(':').map(Number);return(h===0?24:h)*60+(m||0)};
+const DATE_TO_DAY={‘2026-03-20’:‘d0320’,‘2026-03-21’:‘d0321’,‘2026-03-22’:‘d0322’,‘2026-03-23’:‘d0323’};
+const toMins=t=>{if(!t||!t.includes(’:’))return 9999;const[h,m]=t.split(’:’).map(Number);return(h===0?24:h)*60+(m||0)};
 
 function addSch(){
-  const date=document.getElementById('new-date').value;
-  const time=document.getElementById('new-time').value;
-  const desc=document.getElementById('new-desc').value.trim();
-  if(!desc){alert('請輸入行程內容！');return}
-  const schId=Date.now();
-  schs.push({date,time,desc,id:schId});
-  sv('seoul_schs',schs);
-  // 附帶記帳
-  if(document.getElementById('tog-exp').checked){
-    const raw=parseInt(document.getElementById('exp-amt').value);
-    const amt=toKrw(raw,expCur);
-    if(amt===null)return;
-    if(!amt||amt<=0){alert('請輸入花費金額！');return}
-    const payer=document.getElementById('exp-payer').value;
-    const sw=['Una','Doris','Eagle'].filter(x=>document.getElementById('sp-'+x).checked);
-    if(!sw.length){alert('請選擇分帳對象！');return}
-    exps.push({name:desc,amount:amt,payer,splitWith:sw,id:schId+1});
-    sv('seoul_exps',exps);
-    renderExps();
-    document.getElementById('exp-amt').value='';
-    document.getElementById('tog-exp').checked=false;
-    document.getElementById('exp-fields').style.display='none';
-  }
-  document.getElementById('new-desc').value='';
-  renderSchs();
+const date=document.getElementById(‘new-date’).value;
+const time=document.getElementById(‘new-time’).value;
+const desc=document.getElementById(‘new-desc’).value.trim();
+if(!desc){alert(‘請輸入行程內容！’);return}
+const schId=Date.now();
+schs.push({date,time,desc,id:schId});
+sv(‘seoul_schs’,schs);
+// 附帶記帳
+if(document.getElementById(‘tog-exp’).checked){
+const raw=parseInt(document.getElementById(‘exp-amt’).value);
+const amt=toKrw(raw,expCur);
+if(amt===null)return;
+if(!amt||amt<=0){alert(‘請輸入花費金額！’);return}
+const payer=document.getElementById(‘exp-payer’).value;
+const sw=[‘Una’,‘Doris’,‘Eagle’].filter(x=>document.getElementById(‘sp-’+x).checked);
+if(!sw.length){alert(‘請選擇分帳對象！’);return}
+exps.push({name:desc,amount:amt,payer,splitWith:sw,id:schId+1});
+sv(‘seoul_exps’,exps);
+renderExps();
+document.getElementById(‘exp-amt’).value=’’;
+document.getElementById(‘tog-exp’).checked=false;
+document.getElementById(‘exp-fields’).style.display=‘none’;
+}
+document.getElementById(‘new-desc’).value=’’;
+renderSchs();
 }
 function renderSchs(){
-  document.querySelectorAll('.tl-item-custom').forEach(el=>el.remove());
-  document.getElementById('custom-container').innerHTML='';
-  if(!schs.length)return;
-  schs.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
-  schs.forEach(s=>{
-    const dayId=DATE_TO_DAY[s.date];
-    const el=document.createElement('div');
-    el.className='tl-item tl-item-custom';
-    el.innerHTML=`
-      <div class="tl-tc"><span class="tl-time">${s.time}</span></div>
-      <div class="tl-gap"></div>
-      <div class="tl-body">
-        <div class="tl-cat">自訂</div>
-        <div class="tl-title">${s.desc}</div>
-        <div class="tl-acts">
-          <button class="tl-btn" onclick="openEdit(${s.id})">✏ 修改</button>
-          <button class="tl-btn" onclick="delSch(${s.id})" style="color:var(--rust)">✖ 刪除</button>
-        </div>
-      </div>`;
-    if(dayId){
-      const panel=document.querySelector('#'+dayId+' .tl-panel');
-      if(panel){
-        document.getElementById(dayId).classList.add('open');
-        const schMins=toMins(s.time);
-        const existing=[...panel.querySelectorAll('.tl-item:not(.tl-item-custom)')];
-        let inserted=false;
-        for(const item of existing){
-          const tEl=item.querySelector('.tl-time'),aEl=item.querySelector('.tl-ampm');
-          if(!tEl||!aEl)continue;
-          const raw=(tEl.textContent+(aEl.textContent||'')).substring(0,5);
-          if(toMins(raw)>schMins){item.before(el);inserted=true;break;}
-        }
-        if(!inserted)panel.appendChild(el);
-      }
-    } else {
-      document.getElementById('custom-container').appendChild(el);
-    }
-  });
+document.querySelectorAll(’.tl-item-custom’).forEach(el=>el.remove());
+document.getElementById(‘custom-container’).innerHTML=’’;
+if(!schs.length)return;
+schs.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+schs.forEach(s=>{
+const dayId=DATE_TO_DAY[s.date];
+const el=document.createElement(‘div’);
+el.className=‘tl-item tl-item-custom’;
+el.innerHTML=` <div class="tl-tc"><span class="tl-time">${s.time}</span></div> <div class="tl-gap"></div> <div class="tl-body"> <div class="tl-cat">自訂</div> <div class="tl-title">${s.desc}</div> <div class="tl-acts"> <button class="tl-btn" onclick="openEdit(${s.id})">✏ 修改</button> <button class="tl-btn" onclick="delSch(${s.id})" style="color:var(--rust)">✖ 刪除</button> </div> </div>`;
+if(dayId){
+const panel=document.querySelector(’#’+dayId+’ .tl-panel’);
+if(panel){
+document.getElementById(dayId).classList.add(‘open’);
+const schMins=toMins(s.time);
+const existing=[…panel.querySelectorAll(’.tl-item:not(.tl-item-custom)’)];
+let inserted=false;
+for(const item of existing){
+const tEl=item.querySelector(’.tl-time’),aEl=item.querySelector(’.tl-ampm’);
+if(!tEl||!aEl)continue;
+const raw=(tEl.textContent+(aEl.textContent||’’)).substring(0,5);
+if(toMins(raw)>schMins){item.before(el);inserted=true;break;}
+}
+if(!inserted)panel.appendChild(el);
+}
+} else {
+document.getElementById(‘custom-container’).appendChild(el);
+}
+});
 }
 function openEdit(id){
-  const s=schs.find(x=>x.id===id);if(!s)return;
-  document.getElementById('edit-id').value=id;
-  document.getElementById('edit-date').value=s.date;
-  document.getElementById('edit-time').value=s.time;
-  document.getElementById('edit-desc').value=s.desc;
-  document.getElementById('edit-modal').classList.add('on');
+const s=schs.find(x=>x.id===id);if(!s)return;
+document.getElementById(‘edit-id’).value=id;
+document.getElementById(‘edit-date’).value=s.date;
+document.getElementById(‘edit-time’).value=s.time;
+document.getElementById(‘edit-desc’).value=s.desc;
+document.getElementById(‘edit-modal’).classList.add(‘on’);
 }
-function closeEdit(){document.getElementById('edit-modal').classList.remove('on')}
+function closeEdit(){document.getElementById(‘edit-modal’).classList.remove(‘on’)}
 function saveEdit(){
-  const id=+document.getElementById('edit-id').value,s=schs.find(x=>x.id===id);
-  if(!s)return;
-  s.date=document.getElementById('edit-date').value;
-  s.time=document.getElementById('edit-time').value;
-  s.desc=document.getElementById('edit-desc').value.trim();
-  if(!s.desc){alert('請輸入行程！');return}
-  sv('seoul_schs',schs);closeEdit();renderSchs();
+const id=+document.getElementById(‘edit-id’).value,s=schs.find(x=>x.id===id);
+if(!s)return;
+s.date=document.getElementById(‘edit-date’).value;
+s.time=document.getElementById(‘edit-time’).value;
+s.desc=document.getElementById(‘edit-desc’).value.trim();
+if(!s.desc){alert(‘請輸入行程！’);return}
+sv(‘seoul_schs’,schs);closeEdit();renderSchs();
 }
-document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeEdit()});
-function delSch(id){schs=schs.filter(s=>s.id!==id);sv('seoul_schs',schs);renderSchs()}
+document.getElementById(‘edit-modal’).addEventListener(‘click’,function(e){if(e.target===this)closeEdit()});
+function delSch(id){schs=schs.filter(s=>s.id!==id);sv(‘seoul_schs’,schs);renderSchs()}
 
 // ── EXPENSES ──
 let exps=[];
-const rEl=document.getElementById('rate');
-rEl.value='';
-rEl.addEventListener('input',()=>{sv('seoul_rate',rEl.value);renderExps()});
+const rEl=document.getElementById(‘rate’);
+rEl.value=’’;
+rEl.addEventListener(‘input’,()=>{sv(‘seoul_rate’,rEl.value);renderExps()});
 function getRate(){return parseFloat(rEl.value)||0}
 function toTwd(k){const r=getRate();return r?Math.round(k/r):null}
 function toKrw(amt,cur){
-  if(cur==='krw')return amt;
-  const r=getRate();
-  if(!r){alert('請先填入匯率才能以台幣記帳！');return null;}
-  return Math.round(amt*r);
+if(cur===‘krw’)return amt;
+const r=getRate();
+if(!r){alert(‘請先填入匯率才能以台幣記帳！’);return null;}
+return Math.round(amt*r);
 }
 
 // Standalone expense form
-let saCur='krw', saMode='equal';
+let saCur=‘krw’, saMode=‘equal’;
 function setSaMode(mode,btn){
-  saMode=mode;
-  document.querySelectorAll('.smode-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('sa-equal-wrap').style.display=mode==='equal'?'block':'none';
-  document.getElementById('sa-ratio-wrap').style.display=mode==='ratio'?'block':'none';
-  if(mode==='ratio') previewRatio();
+saMode=mode;
+document.querySelectorAll(’.smode-btn’).forEach(b=>b.classList.remove(‘active’));
+btn.classList.add(‘active’);
+document.getElementById(‘sa-equal-wrap’).style.display=mode===‘equal’?‘block’:‘none’;
+document.getElementById(‘sa-ratio-wrap’).style.display=mode===‘ratio’?‘block’:‘none’;
+if(mode===‘ratio’) previewRatio();
 }
 function previewRatio(){
-  const names=['Una','Doris','Eagle'];
-  const vals=names.map(n=>parseFloat(document.getElementById('ratio-'+n).value)||0);
-  const total=vals.reduce((a,b)=>a+b,0);
-  const rawAmt=parseInt(document.getElementById('sa-amt').value)||0;
-  if(!total){document.getElementById('ratio-preview').textContent='';return;}
-  const amtKrw=saCur==='krw'?rawAmt:Math.round(rawAmt*(parseFloat(document.getElementById('rate').value)||0));
-  let preview=names.map((n,i)=>vals[i]>0?`${n}：₩${Math.round(amtKrw*vals[i]/total).toLocaleString()}`:null).filter(Boolean).join('　');
-  document.getElementById('ratio-preview').textContent=preview?'預覽：'+preview:'';
+const names=[‘Una’,‘Doris’,‘Eagle’];
+const vals=names.map(n=>parseFloat(document.getElementById(‘ratio-’+n).value)||0);
+const total=vals.reduce((a,b)=>a+b,0);
+const rawAmt=parseInt(document.getElementById(‘sa-amt’).value)||0;
+if(!total){document.getElementById(‘ratio-preview’).textContent=’’;return;}
+const amtKrw=saCur===‘krw’?rawAmt:Math.round(rawAmt*(parseFloat(document.getElementById(‘rate’).value)||0));
+let preview=names.map((n,i)=>vals[i]>0?`${n}：₩${Math.round(amtKrw*vals[i]/total).toLocaleString()}`:null).filter(Boolean).join(’　‘);
+document.getElementById(‘ratio-preview’).textContent=preview?‘預覽：’+preview:’’;
 }
 
 function setSaCur(cur,btn){
-  saCur=cur;
-  document.querySelectorAll('#sa-cur-krw,#sa-cur-twd').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('sa-amt').placeholder=cur==='krw'?'金額（₩ 韓元）':'金額（NT$ 台幣）';
+saCur=cur;
+document.querySelectorAll(’#sa-cur-krw,#sa-cur-twd’).forEach(b=>b.classList.remove(‘active’));
+btn.classList.add(‘active’);
+document.getElementById(‘sa-amt’).placeholder=cur===‘krw’?‘金額（₩ 韓元）’:‘金額（NT$ 台幣）’;
 }
 function updSaSp(n){
-  const c=document.getElementById('sasp-'+n),l=document.getElementById('salb-'+n);
-  c.checked?l.classList.add('s'+n[0].toLowerCase()):l.classList.remove('s'+n[0].toLowerCase());
+const c=document.getElementById(‘sasp-’+n),l=document.getElementById(‘salb-’+n);
+c.checked?l.classList.add(‘s’+n[0].toLowerCase()):l.classList.remove(‘s’+n[0].toLowerCase());
 }
 function addSaExp(){
-  const name=document.getElementById('sa-name').value.trim();
-  const raw=parseInt(document.getElementById('sa-amt').value);
-  const amt=toKrw(raw,saCur);
-  if(amt===null)return;
-  const payer=document.getElementById('sa-payer').value;
-  if(!name){alert('請輸入消費項目！');return}
-  if(!amt||amt<=0){alert('請輸入金額！');return}
-  let splitWith,ratios=null;
-  if(saMode==='equal'){
-    splitWith=['Una','Doris','Eagle'].filter(x=>document.getElementById('sasp-'+x).checked);
-    if(!splitWith.length){alert('請選擇分帳對象！');return}
-  } else {
-    const names=['Una','Doris','Eagle'];
-    const vals=names.map(n=>parseFloat(document.getElementById('ratio-'+n).value)||0);
-    const total=vals.reduce((a,b)=>a+b,0);
-    if(!total){alert('請填入至少一人的天數／份數！');return}
-    splitWith=names.filter((_,i)=>vals[i]>0);
-    ratios={};names.forEach((n,i)=>{if(vals[i]>0)ratios[n]=vals[i];});
-  }
-  exps.push({name,amount:amt,payer,splitWith,ratios,id:Date.now()});
-  sv('seoul_exps',exps);renderExps();
-  document.getElementById('sa-name').value='';
-  document.getElementById('sa-amt').value='';
-  if(saMode==='ratio')['Una','Doris','Eagle'].forEach(n=>{document.getElementById('ratio-'+n).value='';});
-  document.getElementById('ratio-preview').textContent='';
-  const btn=document.querySelector('#page-expenses .btn');
-  const orig=btn.textContent;btn.textContent='✓ 已記帳';
-  setTimeout(()=>btn.textContent=orig,1200);
+const name=document.getElementById(‘sa-name’).value.trim();
+const raw=parseInt(document.getElementById(‘sa-amt’).value);
+const amt=toKrw(raw,saCur);
+if(amt===null)return;
+const payer=document.getElementById(‘sa-payer’).value;
+if(!name){alert(‘請輸入消費項目！’);return}
+if(!amt||amt<=0){alert(‘請輸入金額！’);return}
+let splitWith,ratios=null;
+if(saMode===‘equal’){
+splitWith=[‘Una’,‘Doris’,‘Eagle’].filter(x=>document.getElementById(‘sasp-’+x).checked);
+if(!splitWith.length){alert(‘請選擇分帳對象！’);return}
+} else {
+const names=[‘Una’,‘Doris’,‘Eagle’];
+const vals=names.map(n=>parseFloat(document.getElementById(‘ratio-’+n).value)||0);
+const total=vals.reduce((a,b)=>a+b,0);
+if(!total){alert(‘請填入至少一人的天數／份數！’);return}
+splitWith=names.filter((_,i)=>vals[i]>0);
+ratios={};names.forEach((n,i)=>{if(vals[i]>0)ratios[n]=vals[i];});
+}
+exps.push({name,amount:amt,payer,splitWith,ratios,id:Date.now()});
+sv(‘seoul_exps’,exps);renderExps();
+document.getElementById(‘sa-name’).value=’’;
+document.getElementById(‘sa-amt’).value=’’;
+if(saMode===‘ratio’)[‘Una’,‘Doris’,‘Eagle’].forEach(n=>{document.getElementById(‘ratio-’+n).value=’’;});
+document.getElementById(‘ratio-preview’).textContent=’’;
+const btn=document.querySelector(’#page-expenses .btn’);
+const orig=btn.textContent;btn.textContent=‘✓ 已記帳’;
+setTimeout(()=>btn.textContent=orig,1200);
 }
 
 // Quick expense (FAB)
-let qCur='krw',qCat='';
+let qCur=‘krw’,qCat=’’;
 function setQCur(cur,btn){
-  qCur=cur;
-  document.querySelectorAll('#q-cur-krw,#q-cur-twd').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('q-amt').placeholder=cur==='krw'?'金額（₩）':'金額（NT$）';
+qCur=cur;
+document.querySelectorAll(’#q-cur-krw,#q-cur-twd’).forEach(b=>b.classList.remove(‘active’));
+btn.classList.add(‘active’);
+document.getElementById(‘q-amt’).placeholder=cur===‘krw’?‘金額（₩）’:‘金額（NT$）’;
 }
 function updQsp(n){
-  const c=document.getElementById('qsp-'+n),l=document.getElementById('qlb-'+n);
-  c.checked?l.classList.add('s'+n[0].toLowerCase()):l.classList.remove('s'+n[0].toLowerCase());
+const c=document.getElementById(‘qsp-’+n),l=document.getElementById(‘qlb-’+n);
+c.checked?l.classList.add(‘s’+n[0].toLowerCase()):l.classList.remove(‘s’+n[0].toLowerCase());
 }
 function setQcat(btn,cat){
-  document.querySelectorAll('.qcat').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');qCat=cat;
-  const n=document.getElementById('q-name');if(!n.value)n.value=cat;
+document.querySelectorAll(’.qcat’).forEach(b=>b.classList.remove(‘active’));
+btn.classList.add(‘active’);qCat=cat;
+const n=document.getElementById(‘q-name’);if(!n.value)n.value=cat;
 }
-function openQexp(){document.getElementById('qexp-modal').classList.add('on');setTimeout(()=>document.getElementById('q-name').focus(),100)}
-function closeQexp(){document.getElementById('qexp-modal').classList.remove('on')}
-document.getElementById('qexp-modal').addEventListener('click',function(e){if(e.target===this)closeQexp()});
+function openQexp(){document.getElementById(‘qexp-modal’).classList.add(‘on’);setTimeout(()=>document.getElementById(‘q-name’).focus(),100)}
+function closeQexp(){document.getElementById(‘qexp-modal’).classList.remove(‘on’)}
+document.getElementById(‘qexp-modal’).addEventListener(‘click’,function(e){if(e.target===this)closeQexp()});
 function submitQexp(){
-  const _qn=document.getElementById('q-name').value.trim();
-  const name=_qn||qCat||'消費';
-  const raw=parseInt(document.getElementById('q-amt').value);
-  const amt=toKrw(raw,qCur);
-  if(amt===null)return;
-  const payer=document.getElementById('q-payer').value;
-  const sw=['Una','Doris','Eagle'].filter(x=>document.getElementById('qsp-'+x).checked);
-  if(!amt||amt<=0){alert('請輸入金額！');return}
-  if(!sw.length){alert('請選擇分帳對象！');return}
-  exps.push({name,amount:amt,payer,splitWith:sw,id:Date.now()});
-  sv('seoul_exps',exps);renderExps();
-  document.getElementById('q-name').value='';
-  document.getElementById('q-amt').value='';
-  document.querySelectorAll('.qcat').forEach(b=>b.classList.remove('active'));
-  qCat='';qCur='krw';
-  document.getElementById('q-cur-krw').classList.add('active');
-  document.getElementById('q-cur-twd').classList.remove('active');
-  closeQexp();
+const _qn=document.getElementById(‘q-name’).value.trim();
+const name=_qn||qCat||‘消費’;
+const raw=parseInt(document.getElementById(‘q-amt’).value);
+const amt=toKrw(raw,qCur);
+if(amt===null)return;
+const payer=document.getElementById(‘q-payer’).value;
+const sw=[‘Una’,‘Doris’,‘Eagle’].filter(x=>document.getElementById(‘qsp-’+x).checked);
+if(!amt||amt<=0){alert(‘請輸入金額！’);return}
+if(!sw.length){alert(‘請選擇分帳對象！’);return}
+exps.push({name,amount:amt,payer,splitWith:sw,id:Date.now()});
+sv(‘seoul_exps’,exps);renderExps();
+document.getElementById(‘q-name’).value=’’;
+document.getElementById(‘q-amt’).value=’’;
+document.querySelectorAll(’.qcat’).forEach(b=>b.classList.remove(‘active’));
+qCat=’’;qCur=‘krw’;
+document.getElementById(‘q-cur-krw’).classList.add(‘active’);
+document.getElementById(‘q-cur-twd’).classList.remove(‘active’);
+closeQexp();
 }
 
-function delExp(id){exps=exps.filter(e=>e.id!==id);sv('seoul_exps',exps);renderExps()}
+function delExp(id){exps=exps.filter(e=>e.id!==id);sv(‘seoul_exps’,exps);renderExps()}
 function renderExps(){
-  const le=document.getElementById('exp-list');
-  const sw_=document.getElementById('sum-wrap');
-  const st=document.getElementById('sum-total');
-  const sr=document.getElementById('sum-rows');
-  const cw=document.getElementById('chart-wrap');
-  const ci=document.getElementById('chart-inner');
-  if(!exps.length){
-    le.innerHTML='<div style="padding:18px 15px;text-align:center;font-size:13px;color:var(--ink3)">目前沒有消費紀錄</div>';
-    sw_.style.display='none';cw.style.display='none';return;
-  }
-  const paid={Una:0,Doris:0,Eagle:0},owed={Una:0,Doris:0,Eagle:0};
-  let total=0,lh='';
-  exps.forEach(e=>{
-    const sw=e.splitWith||['Una','Doris','Eagle'];
-    const tw=toTwd(e.amount);
-    let metaStr,shareMap={};
-    if(e.ratios){
-      // 比例分帳
-      const totalR=Object.values(e.ratios).reduce((a,b)=>a+b,0);
-      sw.forEach(p=>{shareMap[p]=Math.round(e.amount*e.ratios[p]/totalR);});
-      // rounding adjustment
-      const diff=e.amount-Object.values(shareMap).reduce((a,b)=>a+b,0);
-      if(diff&&sw.length)shareMap[sw[0]]+=diff;
-      metaStr=sw.map(p=>`${p} ×${e.ratios[p]}份 ₩${shareMap[p].toLocaleString()}`).join('　');
-    } else {
-      const sh=Math.round(e.amount/sw.length);
-      sw.forEach(p=>{shareMap[p]=sh;});
-      const diff=e.amount-sh*sw.length;
-      if(diff&&sw.length)shareMap[sw[0]]+=diff;
-      metaStr='分帳：'+sw.join(' / ')+' · 每人 ₩'+sh.toLocaleString();
-    }
-    lh+=`<div class="exp-row">
-      <div style="min-width:0;flex:1">
-        <div class="exp-name">${e.name}<span class="exp-who">${e.payer}</span></div>
-        <div class="exp-meta">${metaStr}</div>
-      </div>
-      <div class="exp-r">
-        <div class="exp-amt">₩${e.amount.toLocaleString()} <span class="del" onclick="delExp(${e.id})">✖</span></div>
-        ${tw?`<div class="exp-twd">≈ NT$${tw.toLocaleString()}</div>`:''}
-      </div>
-    </div>`;
-    paid[e.payer]+=e.amount;
-    sw.forEach(p=>owed[p]+=shareMap[p]||0);
-    total+=e.amount;
-  });
-  le.innerHTML=lh;
-  const tt=toTwd(total);
-  st.innerHTML=`總花費　₩${total.toLocaleString()}${tt?`<span>≈ NT$${tt.toLocaleString()}</span>`:''}`;
-  let rh='';
-  ['Una','Doris','Eagle'].forEach(p=>{
-    const b=paid[p]-owed[p],t2=toTwd(Math.abs(b));
-    const tn=t2?` (≈NT$${t2.toLocaleString()})`:'' ;
-    if(b>0)rh+=`<div class="sum-row"><span>${p}</span><span class="pos">應拿回 ₩${b.toLocaleString()}${tn}</span></div>`;
-    else if(b<0)rh+=`<div class="sum-row"><span>${p}</span><span class="neg">應拿出 ₩${Math.abs(b).toLocaleString()}${tn}</span></div>`;
-    else rh+=`<div class="sum-row"><span>${p}</span><span class="neu">無須補退</span></div>`;
-  });
-  sr.innerHTML=rh;sw_.style.display='block';
+const le=document.getElementById(‘exp-list’);
+const sw_=document.getElementById(‘sum-wrap’);
+const st=document.getElementById(‘sum-total’);
+const sr=document.getElementById(‘sum-rows’);
+const cw=document.getElementById(‘chart-wrap’);
+const ci=document.getElementById(‘chart-inner’);
+if(!exps.length){
+le.innerHTML=’<div style="padding:18px 15px;text-align:center;font-size:13px;color:var(--ink3)">目前沒有消費紀錄</div>’;
+sw_.style.display=‘none’;cw.style.display=‘none’;return;
+}
+const paid={Una:0,Doris:0,Eagle:0},owed={Una:0,Doris:0,Eagle:0};
+let total=0,lh=’’;
+exps.forEach(e=>{
+const sw=e.splitWith||[‘Una’,‘Doris’,‘Eagle’];
+const tw=toTwd(e.amount);
+let metaStr,shareMap={};
+if(e.ratios){
+// 比例分帳
+const totalR=Object.values(e.ratios).reduce((a,b)=>a+b,0);
+sw.forEach(p=>{shareMap[p]=Math.round(e.amount*e.ratios[p]/totalR);});
+// rounding adjustment
+const diff=e.amount-Object.values(shareMap).reduce((a,b)=>a+b,0);
+if(diff&&sw.length)shareMap[sw[0]]+=diff;
+metaStr=sw.map(p=>`${p} ×${e.ratios[p]}份 ₩${shareMap[p].toLocaleString()}`).join(’　’);
+} else {
+const sh=Math.round(e.amount/sw.length);
+sw.forEach(p=>{shareMap[p]=sh;});
+const diff=e.amount-sh*sw.length;
+if(diff&&sw.length)shareMap[sw[0]]+=diff;
+metaStr=‘分帳：’+sw.join(’ / ‘)+’ · 每人 ₩’+sh.toLocaleString();
+}
+lh+=`<div class="exp-row"> <div style="min-width:0;flex:1"> <div class="exp-name">${e.name}<span class="exp-who">${e.payer}</span></div> <div class="exp-meta">${metaStr}</div> </div> <div class="exp-r"> <div class="exp-amt">₩${e.amount.toLocaleString()} <span class="del" onclick="delExp(${e.id})">✖</span></div> ${tw?`<div class="exp-twd">≈ NT$${tw.toLocaleString()}</div>`:''} </div> </div>`;
+paid[e.payer]+=e.amount;
+sw.forEach(p=>owed[p]+=shareMap[p]||0);
+total+=e.amount;
+});
+le.innerHTML=lh;
+const tt=toTwd(total);
+st.innerHTML=`總花費　₩${total.toLocaleString()}${tt?`<span>≈ NT$${tt.toLocaleString()}</span>`:''}`;
+let rh=’’;
+[‘Una’,‘Doris’,‘Eagle’].forEach(p=>{
+const b=paid[p]-owed[p],t2=toTwd(Math.abs(b));
+const tn=t2?` (≈NT$${t2.toLocaleString()})`:’’ ;
+if(b>0)rh+=`<div class="sum-row"><span>${p}</span><span class="pos">應拿回 ₩${b.toLocaleString()}${tn}</span></div>`;
+else if(b<0)rh+=`<div class="sum-row"><span>${p}</span><span class="neg">應拿出 ₩${Math.abs(b).toLocaleString()}${tn}</span></div>`;
+else rh+=`<div class="sum-row"><span>${p}</span><span class="neu">無須補退</span></div>`;
+});
+sr.innerHTML=rh;sw_.style.display=‘block’;
 
-  // ── 結清方式（最少轉帳筆數）──
-  const settle=document.getElementById('settle-wrap');
-  const settleRows=document.getElementById('settle-rows');
-  // 計算每人淨額
-  const bal={Una:paid.Una-owed.Una, Doris:paid.Doris-owed.Doris, Eagle:paid.Eagle-owed.Eagle};
-  // 分成債主（正）和債務人（負）
-  const creditors=Object.entries(bal).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
-  const debtors=Object.entries(bal).filter(([,v])=>v<0).sort((a,b)=>a[1]-b[1]);
-  if(!creditors.length){settle.style.display='none';}
-  else{
-    let sh='';
-    const cred=creditors.map(([n,v])=>({n,v}));
-    const debt=debtors.map(([n,v])=>({n,v:-v}));
-    let ci=0,di=0;
-    while(ci<cred.length&&di<debt.length){
-      const amt=Math.min(cred[ci].v,debt[di].v);
-      if(amt>0){
-        const tw=toTwd(amt);
-        sh+=`<div class="sum-row">
-          <span><b>${debt[di].n}</b> 轉給 <b>${cred[ci].n}</b></span>
-          <span class="neg">₩${amt.toLocaleString()}${tw?` <span style="font-size:11px;color:var(--ink3)">≈NT$${tw.toLocaleString()}</span>`:''}
-          </span></div>`;
-        cred[ci].v-=amt;
-        debt[di].v-=amt;
-      }
-      if(cred[ci].v<1)ci++;
-      if(debt[di].v<1)di++;
-    }
-    settleRows.innerHTML=sh||'<div class="sum-row"><span class="neu">已結清，無需轉帳</span></div>';
-    settle.style.display='block';
-  }
-  const mx=Math.max(...Object.values(paid),1);
-  let ch='';
-  ['Una','Doris','Eagle'].forEach(p=>{
-    const pct=Math.round(paid[p]/mx*100),tw2=toTwd(paid[p]);
-    const fc={Una:'fu',Doris:'fd',Eagle:'fe'}[p];
-    ch+=`<div class="chart-lbl"><span>${p}</span><span>₩${paid[p].toLocaleString()}${tw2?` · NT$${tw2.toLocaleString()}`:''}</span></div>
-    <div class="chart-bg"><div class="chart-fill ${fc}" style="width:${pct}%"></div></div>`;
-  });
-  ci.innerHTML=ch;cw.style.display='block';
+// ── 結清方式（最少轉帳筆數）──
+const settle=document.getElementById(‘settle-wrap’);
+const settleRows=document.getElementById(‘settle-rows’);
+// 計算每人淨額
+const bal={Una:paid.Una-owed.Una, Doris:paid.Doris-owed.Doris, Eagle:paid.Eagle-owed.Eagle};
+// 分成債主（正）和債務人（負）
+const creditors=Object.entries(bal).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+const debtors=Object.entries(bal).filter(([,v])=>v<0).sort((a,b)=>a[1]-b[1]);
+if(!creditors.length){settle.style.display=‘none’;}
+else{
+let sh=’’;
+const cred=creditors.map(([n,v])=>({n,v}));
+const debt=debtors.map(([n,v])=>({n,v:-v}));
+let ci=0,di=0;
+while(ci<cred.length&&di<debt.length){
+const amt=Math.min(cred[ci].v,debt[di].v);
+if(amt>0){
+const tw=toTwd(amt);
+sh+=`<div class="sum-row"> <span><b>${debt[di].n}</b> 轉給 <b>${cred[ci].n}</b></span> <span class="neg">₩${amt.toLocaleString()}${tw?` <span style="font-size:11px;color:var(--ink3)">≈NT$${tw.toLocaleString()}</span>`:''} </span></div>`;
+cred[ci].v-=amt;
+debt[di].v-=amt;
+}
+if(cred[ci].v<1)ci++;
+if(debt[di].v<1)di++;
+}
+settleRows.innerHTML=sh||’<div class="sum-row"><span class="neu">已結清，無需轉帳</span></div>’;
+settle.style.display=‘block’;
+}
+const mx=Math.max(…Object.values(paid),1);
+let ch=’’;
+[‘Una’,‘Doris’,‘Eagle’].forEach(p=>{
+const pct=Math.round(paid[p]/mx*100),tw2=toTwd(paid[p]);
+const fc={Una:‘fu’,Doris:‘fd’,Eagle:‘fe’}[p];
+ch+=`<div class="chart-lbl"><span>${p}</span><span>₩${paid[p].toLocaleString()}${tw2?` · NT$${tw2.toLocaleString()}`:''}</span></div> <div class="chart-bg"><div class="chart-fill ${fc}" style="width:${pct}%"></div></div>`;
+});
+ci.innerHTML=ch;cw.style.display=‘block’;
 }
 // ── ASYNC INIT：從雲端載入資料 ──
 async function init() {
-  setSync('loading');
+setSync(‘loading’);
 
-  // ① 最優先：內建行程修改（最快套用，避免閃爍）
-  const savedBuiltin = await dbGet('seoul_builtin_edits');
-  if (savedBuiltin) { builtinEdits = savedBuiltin; applyAllBuiltinEdits(); }
+// ① 最優先：內建行程修改（最快套用，避免閃爍）
+const savedBuiltin = await dbGet(‘seoul_builtin_edits’);
+if (savedBuiltin) { builtinEdits = savedBuiltin; applyAllBuiltinEdits(); }
 
-  // ② 並行載入其他資料
-  const [rate, savedSchs, savedExps, savedSeats] = await Promise.all([
-    dbGet('seoul_rate'),
-    dbGet('seoul_schs'),
-    dbGet('seoul_exps'),
-    dbGet('seoul_seats'),
-  ]);
+// ② 並行載入其他資料
+const [rate, savedSchs, savedExps, savedSeats] = await Promise.all([
+dbGet(‘seoul_rate’),
+dbGet(‘seoul_schs’),
+dbGet(‘seoul_exps’),
+dbGet(‘seoul_seats’),
+]);
 
-  if (rate !== null) document.getElementById('rate').value = rate;
-  if (savedSchs) schs = savedSchs;
-  if (savedExps) exps = savedExps;
-  if (savedSeats) Object.assign(seatOverrides, savedSeats);
+if (rate !== null) document.getElementById(‘rate’).value = rate;
+if (savedSchs) schs = savedSchs;
+if (savedExps) exps = savedExps;
+if (savedSeats) Object.assign(seatOverrides, savedSeats);
 
-  setSync('ok');
-  renderSchs();
-  renderExps();
-  renderSeats();
+// 載入備忘錄
+const savedNotes = await dbGet(‘seoul_notes’);
+if (savedNotes && Array.isArray(savedNotes)) notes = savedNotes;
 
-  // 啟動即時訂閱
-  subscribeRealtime();
+setSync(‘ok’);
+renderSchs();
+renderExps();
+renderSeats();
+
+// 啟動即時訂閱
+subscribeRealtime();
 }
 init();
 </script>
+
 </div><!-- /app-shell -->
 </body>
 </html>
