@@ -300,9 +300,9 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 <div class="app-shell">
 <!-- TAB BAR -->
 <div class="tabbar">
-  <button class="tabbtn active" onclick="swTab('schedule',this)"><span class="ic">📍</span>行程</button>
-  <button class="tabbtn" onclick="swTab('expenses',this)"><span class="ic">💰</span>記帳</button>
-  <button class="tabbtn" onclick="swTab('seats',this)"><span class="ic">🎫</span>座位</button>
+  <button class="tabbtn active" data-tab="schedule" onclick="swTab(this.dataset.tab,this)"><span class="ic">📍</span>行程</button>
+  <button class="tabbtn" data-tab="expenses" onclick="swTab(this.dataset.tab,this)"><span class="ic">💰</span>記帳</button>
+  <button class="tabbtn" data-tab="seats" onclick="swTab(this.dataset.tab,this)"><span class="ic">🎫</span>座位</button>
 </div>
 
 <!-- HEADER -->
@@ -353,7 +353,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 ```
 <!-- 3/20 -->
 <div class="tl-day open" id="d0320">
-  <div class="tl-day-hd" onclick="togDay('d0320')">
+  <div class="tl-day-hd" data-day="d0320" onclick="togDay(this.dataset.day)">
     <div class="tl-day-date-group"><span class="tl-day-date-num">3/20</span><span class="tl-day-dow">五</span></div>
     <div class="tl-day-divider"></div>
     <div class="tl-day-name">啟程</div>
@@ -374,7 +374,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
             <div class="fl-port"><div class="fl-code">ICN</div><div class="fl-ts">18:45</div><div class="fl-t1">T1</div></div>
           </div>
         </div></div>
-      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi1',this)">✏ 修改</button></div></div>
+      <div class="tl-acts"><button class="tl-btn" data-eid="bi1" onclick="openBuiltinEdit(this.dataset.eid,this)">✏ 修改</button></div></div>
     </div>
     <div class="tl-item">
       <div class="tl-tc" data-eid="bi2"><span class="tl-time">18:45</span><span class="tl-ampm">KST</span></div>
@@ -383,7 +383,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
         <div class="tl-cat">抵達</div>
         <div class="tl-title">Una &amp; Eagle 抵達仁川</div>
         <div class="tl-desc">BR160 落地 T1。Una 在入境後於 1F 購買 <strong>WOWPASS</strong>，儲值後可用於交通 &amp; 消費。</div>
-      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi2',this)">✏ 修改</button></div></div>
+      <div class="tl-acts"><button class="tl-btn" data-eid="bi2" onclick="openBuiltinEdit(this.dataset.eid,this)">✏ 修改</button></div></div>
     </div>
     <div class="tl-item">
       <div class="tl-tc" data-eid="bi3"><span class="tl-time">20:00</span><span class="tl-ampm">台灣</span></div>
@@ -399,7 +399,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
             <div class="fl-port"><div class="fl-code">ICN</div><div class="fl-ts">23:30</div><div class="fl-t1">T1</div></div>
           </div>
         </div></div>
-      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi3',this)">✏ 修改</button></div></div>
+      <div class="tl-acts"><button class="tl-btn" data-eid="bi3" onclick="openBuiltinEdit(this.dataset.eid,this)">✏ 修改</button></div></div>
     </div>
     <div class="tl-item">
       <div class="tl-tc" data-eid="bi4"><span class="tl-time">21:00</span><span class="tl-ampm">KST</span></div>
@@ -413,7 +413,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
           <div class="acc-addr"><div>19-6, World Cup buk-ro 6-gil, Mapo-gu, Seoul</div><div style="color:var(--ink3);margin-top:2px">首爾特別市麻浦區連南洞 570-35</div></div>
           <a class="acc-map" href="https://map.naver.com/p/search/서울특별시 마포구 연남동 570-35" target="_blank">🗺️ 開啟地圖導航</a>
         </div>
-      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi4',this)">✏ 修改</button></div></div>
+      <div class="tl-acts"><button class="tl-btn" data-eid="bi4" onclick="openBuiltinEdit(this.dataset.eid,this)">✏ 修改</button></div></div>
     </div>
     <div class="tl-item">
       <div class="tl-tc" data-eid="bi5"><span class="tl-time">23:30</span><span class="tl-ampm">KST</span></div>
@@ -422,14 +422,14 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
         <div class="tl-cat">抵達</div>
         <div class="tl-title">Doris 抵達 &amp; 入住</div>
         <div class="tl-desc">IT602 落地仁川 T1，搭 AREX 至弘大入口站前往住所。</div>
-      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi5',this)">✏ 修改</button></div></div>
+      <div class="tl-acts"><button class="tl-btn" data-eid="bi5" onclick="openBuiltinEdit(this.dataset.eid,this)">✏ 修改</button></div></div>
     </div>
   </div>
 </div>
 
 <!-- 3/21 -->
 <div class="tl-day" id="d0321">
-  <div class="tl-day-hd" onclick="togDay('d0321')">
+  <div class="tl-day-hd" data-day="d0321" onclick="togDay(this.dataset.day)">
     <div class="tl-day-date-group"><span class="tl-day-date-num">3/21</span><span class="tl-day-dow">六</span></div>
     <div class="tl-day-divider"></div>
     <div class="tl-day-name">見面會 Day 1</div>
@@ -439,19 +439,19 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
     <div class="tl-item show-it">
       <div class="tl-tc" data-eid="bi6"><span class="tl-time">14:00</span><span class="tl-ampm">KST</span></div>
       <div class="tl-gap"></div>
-      <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">第一場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi6',this)">✏ 修改</button></div></div>
+      <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">第一場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" data-eid="bi6" onclick="openBuiltinEdit(this.dataset.eid,this)">✏ 修改</button></div></div>
     </div>
     <div class="tl-item show-it">
       <div class="tl-tc" data-eid="bi7"><span class="tl-time">19:00</span><span class="tl-ampm">KST</span></div>
       <div class="tl-gap"></div>
-      <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">第二場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi7',this)">✏ 修改</button></div></div>
+      <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">第二場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" data-eid="bi7" onclick="openBuiltinEdit(this.dataset.eid,this)">✏ 修改</button></div></div>
     </div>
   </div>
 </div>
 
 <!-- 3/22 -->
 <div class="tl-day" id="d0322">
-  <div class="tl-day-hd" onclick="togDay('d0322')">
+  <div class="tl-day-hd" data-day="d0322" onclick="togDay(this.dataset.day)">
     <div class="tl-day-date-group"><span class="tl-day-date-num">3/22</span><span class="tl-day-dow">日</span></div>
     <div class="tl-day-divider"></div>
     <div class="tl-day-name">見面會 Day 2</div>
@@ -461,7 +461,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
     <div class="tl-item show-it">
       <div class="tl-tc" data-eid="bi8"><span class="tl-time">14:00</span><span class="tl-ampm">KST</span></div>
       <div class="tl-gap"></div>
-      <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">最終場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi8',this)">✏ 修改</button></div></div>
+      <div class="tl-body"><div class="tl-cat sc">表演</div><div class="tl-title">最終場</div><div class="tl-loc">獎忠體育館</div><div class="tl-acts"><button class="tl-btn" data-eid="bi8" onclick="openBuiltinEdit(this.dataset.eid,this)">✏ 修改</button></div></div>
     </div>
     <div class="tl-item">
       <div class="tl-tc" data-eid="bi9"><span class="tl-time">00:30</span><span class="tl-ampm">＊3/23</span></div>
@@ -478,14 +478,14 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
             <div class="fl-port"><div class="fl-code">TPE</div><div class="fl-ts">02:15</div><div class="fl-t1">T1</div></div>
           </div>
         </div></div>
-      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi9',this)">✏ 修改</button></div></div>
+      <div class="tl-acts"><button class="tl-btn" data-eid="bi9" onclick="openBuiltinEdit(this.dataset.eid,this)">✏ 修改</button></div></div>
     </div>
   </div>
 </div>
 
 <!-- 3/23 -->
 <div class="tl-day" id="d0323">
-  <div class="tl-day-hd" onclick="togDay('d0323')">
+  <div class="tl-day-hd" data-day="d0323" onclick="togDay(this.dataset.day)">
     <div class="tl-day-date-group"><span class="tl-day-date-num">3/23</span><span class="tl-day-dow">一</span></div>
     <div class="tl-day-divider"></div>
     <div class="tl-day-name">返台</div>
@@ -506,7 +506,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
             <div class="fl-port"><div class="fl-code">TPE</div><div class="fl-ts">13:30</div><div class="fl-t1">T2</div></div>
           </div>
         </div></div>
-      <div class="tl-acts"><button class="tl-btn" onclick="openBuiltinEdit('bi10',this)">✏ 修改</button></div></div>
+      <div class="tl-acts"><button class="tl-btn" data-eid="bi10" onclick="openBuiltinEdit(this.dataset.eid,this)">✏ 修改</button></div></div>
     </div>
   </div>
 </div>
@@ -526,8 +526,8 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
     <label class="tog-lbl"><input type="checkbox" id="tog-exp" onchange="togExpF()">💰 同時記一筆花費</label>
     <div id="exp-fields" style="display:none" class="exp-fields">
       <div class="cur-toggle">
-        <button class="cur-btn active" id="exp-cur-krw" onclick="setExpCur('krw',this)">₩ 韓元</button>
-        <button class="cur-btn" id="exp-cur-twd" onclick="setExpCur('twd',this)">NT$ 台幣</button>
+        <button class="cur-btn active" id="exp-cur-krw" data-cur="krw" onclick="setExpCur(this.dataset.cur,this)">₩ 韓元</button>
+        <button class="cur-btn" id="exp-cur-twd" data-cur="twd" onclick="setExpCur(this.dataset.cur,this)">NT$ 台幣</button>
       </div>
       <input type="number" id="exp-amt" placeholder="金額" inputmode="numeric">
       <select id="exp-payer">
@@ -553,8 +553,8 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
   <div class="card">
     <div class="card-title">add expense · 記帳</div>
     <div class="cur-toggle">
-      <button class="cur-btn active" id="sa-cur-krw" onclick="setSaCur('krw',this)">₩ 韓元 KRW</button>
-      <button class="cur-btn" id="sa-cur-twd" onclick="setSaCur('twd',this)">NT$ 台幣 TWD</button>
+      <button class="cur-btn active" id="sa-cur-krw" data-cur="krw" onclick="setSaCur(this.dataset.cur,this)">₩ 韓元 KRW</button>
+      <button class="cur-btn" id="sa-cur-twd" data-cur="twd" onclick="setSaCur(this.dataset.cur,this)">NT$ 台幣 TWD</button>
     </div>
     <input type="text" id="sa-name" placeholder="消費項目（例：住宿費、炸雞）">
     <input type="number" id="sa-amt" placeholder="金額" inputmode="numeric">
@@ -565,8 +565,8 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
     </select>
     <div class="fl-lbl">分帳方式</div>
     <div class="split-mode-row">
-      <button class="smode-btn active" id="smode-equal" onclick="setSaMode('equal',this)">均分</button>
-      <button class="smode-btn" id="smode-ratio" onclick="setSaMode('ratio',this)">按比例（天數／份數）</button>
+      <button class="smode-btn active" id="smode-equal" data-mode="equal" onclick="setSaMode(this.dataset.mode,this)">均分</button>
+      <button class="smode-btn" id="smode-ratio" data-mode="ratio" onclick="setSaMode(this.dataset.mode,this)">按比例（天數／份數）</button>
     </div>
     <!-- 均分模式 -->
     <div id="sa-equal-wrap">
@@ -608,9 +608,9 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 <div id="page-seats" class="page">
   <div class="sec-hd"><span class="sec-en">seats</span><span class="sec-rule"></span><span class="sec-zh">座位資訊</span></div>
   <div class="stabs">
-    <button class="stab active" onclick="swShow(0,this)">3/21 14:00<br>第一場</button>
-    <button class="stab" onclick="swShow(1,this)">3/21 19:00<br>第二場</button>
-    <button class="stab" onclick="swShow(2,this)">3/22 14:00<br>最終場</button>
+    <button class="stab active" data-si="0" onclick="swShow(+this.dataset.si,this)">3/21 14:00<br>第一場</button>
+    <button class="stab" data-si="1" onclick="swShow(+this.dataset.si,this)">3/21 19:00<br>第二場</button>
+    <button class="stab" data-si="2" onclick="swShow(+this.dataset.si,this)">3/22 14:00<br>最終場</button>
   </div>
   <div id="seats-list"></div>
   <a class="map-link" href="https://map.naver.com/p/search/장충체육관" target="_blank">🗺️ 查看獎忠體育館地圖</a>
@@ -684,16 +684,16 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
   <div class="modal-sheet">
     <h3>💸 快速記帳</h3>
     <div class="qexp-cats">
-      <button class="qcat" onclick="setQcat(this,'餐飲')">🍜 餐飲</button>
-      <button class="qcat" onclick="setQcat(this,'交通')">🚇 交通</button>
-      <button class="qcat" onclick="setQcat(this,'紀念品')">🎁 紀念品</button>
-      <button class="qcat" onclick="setQcat(this,'住宿')">🏠 住宿</button>
-      <button class="qcat" onclick="setQcat(this,'其他')">📌 其他</button>
+      <button class="qcat" data-cat="餐飲" onclick="setQcat(this,this.dataset.cat)">🍜 餐飲</button>
+      <button class="qcat" data-cat="交通" onclick="setQcat(this,this.dataset.cat)">🚇 交通</button>
+      <button class="qcat" data-cat="紀念品" onclick="setQcat(this,this.dataset.cat)">🎁 紀念品</button>
+      <button class="qcat" data-cat="住宿" onclick="setQcat(this,this.dataset.cat)">🏠 住宿</button>
+      <button class="qcat" data-cat="其他" onclick="setQcat(this,this.dataset.cat)">📌 其他</button>
     </div>
     <input type="text" id="q-name" placeholder="消費項目名稱">
     <div class="cur-toggle">
-      <button class="cur-btn active" id="q-cur-krw" onclick="setQCur('krw',this)">₩ 韓元</button>
-      <button class="cur-btn" id="q-cur-twd" onclick="setQCur('twd',this)">NT$ 台幣</button>
+      <button class="cur-btn active" id="q-cur-krw" data-cur="krw" onclick="setQCur(this.dataset.cur,this)">₩ 韓元</button>
+      <button class="cur-btn" id="q-cur-twd" data-cur="twd" onclick="setQCur(this.dataset.cur,this)">NT$ 台幣</button>
     </div>
     <input type="number" id="q-amt" placeholder="金額" inputmode="numeric">
     <select id="q-payer">
