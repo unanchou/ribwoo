@@ -294,17 +294,7 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 .qcat{background:none;border:1px solid var(--line);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;font-family:inherit;transition:.15s}
 .qcat.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 
-/* ── WEATHER ── */
-.weather-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--paper);border-bottom:1px solid var(--line);font-size:13px;color:var(--ink)}
-.weather-icon{font-size:22px;line-height:1}
-.weather-temp{font-size:18px;font-weight:700;color:var(--ink)}
-.weather-desc{color:var(--ink2);font-size:12px}
-.weather-extra{margin-left:auto;font-size:11px;color:var(--ink3);text-align:right;line-height:1.6}
 
-/* ── EXP FILTER ── */
-.exp-filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;padding:0 2px}
-.ef-btn{padding:5px 12px;border:1px solid var(--line);border-radius:20px;background:var(--cream);font-family:'Noto Sans TC',sans-serif;font-size:12px;color:var(--ink3);cursor:pointer;transition:.15s;white-space:nowrap}
-.ef-btn.active{background:var(--sage);color:var(--paper);border-color:var(--sage)}
 
 /* ── CURRENT EVENT HIGHLIGHT ── */
 .tl-item.now-active .tl-body{border-left:3px solid var(--sage);padding-left:8px}
@@ -347,11 +337,9 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
     <span class="npill"><span class="ndot" style="background:var(--una)"></span>Una</span>
     <span class="npill"><span class="ndot" style="background:var(--eagle)"></span>Eagle</span>
     <span class="npill"><span class="ndot" style="background:var(--doris)"></span>Doris</span>
+    <div id="weather-bar" style="display:none;margin-left:auto;align-items:center;gap:6px"></div>
   </div>
 </div>
-
-<!-- WEATHER (only show during trip) -->
-<div id="weather-bar" style="display:none"></div>
 
 <!-- COUNTDOWN -->
 <div class="timer-strip">
@@ -612,7 +600,6 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
   </div>
 
   <div class="sec-hd"><span class="sec-en">log</span><span class="sec-rule"></span><span class="sec-zh">消費紀錄</span></div>
-  <div class="exp-filter-row" id="exp-filter-row"></div>
   <div class="exp-wrap" id="exp-wrap"><div id="exp-list"></div></div>
   <div class="sum-wrap" id="sum-wrap" style="display:none"><div class="sum-total" id="sum-total"></div><div id="sum-rows"></div></div>
   <div class="sum-wrap" id="settle-wrap" style="display:none"><div class="sum-total">結清方式</div><div id="settle-rows"></div></div>
@@ -1045,37 +1032,19 @@ function fetchWeather() {
       var icon = wc<=1?'☀️':wc<=3?'⛅':wc<=48?'🌫️':wc<=67?'🌧️':wc<=77?'❄️':wc<=82?'🌦️':'⛈️';
       var desc = wc<=1?'晴':wc<=3?'多雲':wc<=48?'霧':wc<=67?'雨':wc<=77?'雪':wc<=82?'陣雨':'雷雨';
       var bar = document.getElementById('weather-bar');
-      bar.className = 'weather-bar';
       bar.innerHTML =
-        '<span class="weather-icon">'+icon+'</span>'+
-        '<div><div class="weather-temp">'+Math.round(c.temperature_2m)+'°C</div>'+
-        '<div class="weather-desc">首爾 · '+desc+'</div></div>'+
-        '<div class="weather-extra">濕度 '+c.relativehumidity_2m+'%<br>風速 '+Math.round(c.windspeed_10m)+' km/h</div>';
+        '<span style="font-size:16px">'+icon+'</span>'+
+        '<span style="font-size:12px;font-weight:600;color:var(--ink)">'+Math.round(c.temperature_2m)+'°C</span>'+
+        '<span style="font-size:11px;color:var(--ink3)">首爾</span>';
       bar.style.display = 'flex';
+      bar.style.alignItems = 'center';
+      bar.style.gap = '4px';
     })
     .catch(function(){});
 }
 fetchWeather();
 setInterval(fetchWeather, 600000); // 每 10 分鐘更新
 
-// ── EXP FILTER ──
-var expFilter = 'all';
-var EXP_CATS = ['all','餐飲','交通','紀念品','住宿','其他'];
-var EXP_CAT_LABEL = {all:'全部',餐飲:'🍜 餐飲',交通:'🚇 交通',紀念品:'🎁 紀念品',住宿:'🏠 住宿',其他:'📌 其他'};
-
-function renderExpFilter() {
-  var row = document.getElementById('exp-filter-row');
-  if (!row) return;
-  row.innerHTML = EXP_CATS.map(function(c){
-    return '<button class="ef-btn'+(c===expFilter?' active':'')+'" data-cat="'+c+'" onclick="setExpFilter(this.dataset.cat)">'+EXP_CAT_LABEL[c]+'</button>';
-  }).join('');
-}
-
-function setExpFilter(cat) {
-  expFilter = cat;
-  renderExpFilter();
-  renderExps();
-}
 
 // ── CURRENT EVENT HIGHLIGHT ──
 var DAY_DATES = {d0320:'2026-03-20', d0321:'2026-03-21', d0322:'2026-03-22', d0323:'2026-03-23'};
@@ -1549,11 +1518,9 @@ function renderExps(){
     le.innerHTML='<div style="padding:18px 15px;text-align:center;font-size:13px;color:var(--ink3)">目前沒有消費紀錄</div>';
     sw_.style.display='none';cw.style.display='none';return;
   }
-  renderExpFilter();
-  var filteredExps = expFilter==='all' ? exps : exps.filter(function(e){ return e.cat===expFilter; });
   var paid={Una:0,Doris:0,Eagle:0},owed={Una:0,Doris:0,Eagle:0};
   var total=0,lh='';
-  filteredExps.forEach(function(e){
+  exps.forEach(function(e){
     var sw=e.splitWith||['Una','Doris','Eagle'];
     var tw=toTwd(e.amount);
     var metaStr,shareMap={};
