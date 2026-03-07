@@ -1037,8 +1037,6 @@ var T_ARRIVE = new Date('2026-03-20T18:45:00+09:00').getTime();
 var T_DEPART_HOME = new Date('2026-03-23T13:30:00+08:00').getTime();
 
 function fetchWeather() {
-  var now = Date.now();
-  if (now < T_ARRIVE || now > T_DEPART_HOME) return; // 只在首爾期間顯示
   fetch('https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&timezone=Asia/Seoul')
     .then(function(r){ return r.json(); })
     .then(function(d){
@@ -1551,9 +1549,9 @@ function renderExps(){
     le.innerHTML='<div style="padding:18px 15px;text-align:center;font-size:13px;color:var(--ink3)">目前沒有消費紀錄</div>';
     sw_.style.display='none';cw.style.display='none';return;
   }
-  var paid={Una:0,Doris:0,Eagle:0},owed={Una:0,Doris:0,Eagle:0};
   renderExpFilter();
   var filteredExps = expFilter==='all' ? exps : exps.filter(function(e){ return e.cat===expFilter; });
+  var paid={Una:0,Doris:0,Eagle:0},owed={Una:0,Doris:0,Eagle:0};
   var total=0,lh='';
   filteredExps.forEach(function(e){
     var sw=e.splitWith||['Una','Doris','Eagle'];
@@ -1600,7 +1598,6 @@ function renderExps(){
     else rh+='<div class="sum-row"><span>'+p+'</span><span class="neu">無須補退</span></div>';
   });
   sr.innerHTML=rh;sw_.style.display='block';
-  exps = allExps;
 
   // ── 結清方式（最少轉帳筆數）──
   var settle=document.getElementById('settle-wrap');
