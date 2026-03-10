@@ -301,6 +301,10 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
 .tl-item.now-active .tl-title{color:var(--sage)}
 .now-badge{display:inline-block;background:var(--sage);color:var(--paper);font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:6px;vertical-align:middle;letter-spacing:.5px}
 
+
+.cat-input-row{display:flex;align-items:center;gap:6px;margin:6px 0}
+.cat-presets{display:flex;gap:4px;flex-shrink:0}
+.cat-presets .qcat{padding:5px 7px;font-size:14px;min-width:0}
 </style>
 </head>
 <body>
@@ -526,7 +530,19 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
   <div class="card">
     <div class="card-title">schedule · 行程</div>
     <div class="irow"><input type="date" id="new-date" value="2026-03-20"><input type="time" id="new-time" value="21:30"></div>
-    <input type="text" id="new-desc" placeholder="行程內容（例：延南洞橋村炸雞）">
+    <input type="text" id="new-desc" placeholder="行程標題（例：延南洞橋村炸雞）">
+    <div class="cat-input-row">
+      <input type="text" id="new-cat-input" placeholder="標籤（例：抵達、演出）" style="flex:1;min-width:0">
+      <div class="cat-presets">
+        <button class="qcat" data-cat="餐飲" onclick="pickCat('new-cat-input',this.dataset.cat)">🍜</button>
+        <button class="qcat" data-cat="交通" onclick="pickCat('new-cat-input',this.dataset.cat)">🚇</button>
+        <button class="qcat" data-cat="住宿" onclick="pickCat('new-cat-input',this.dataset.cat)">🏠</button>
+        <button class="qcat" data-cat="紀念品" onclick="pickCat('new-cat-input',this.dataset.cat)">🎁</button>
+        <button class="qcat" data-cat="出發" onclick="pickCat('new-cat-input',this.dataset.cat)">✈️</button>
+        <button class="qcat" data-cat="抵達" onclick="pickCat('new-cat-input',this.dataset.cat)">📍</button>
+      </div>
+    </div>
+    <textarea id="new-note" placeholder="備註說明（選填）" rows="2" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--cream);font-family:'Noto Sans TC',sans-serif;font-size:13px;color:var(--ink);resize:vertical;margin-top:4px"></textarea>
     <label class="tog-lbl"><input type="checkbox" id="tog-exp" onchange="togExpF()">💰 同時記一筆花費</label>
     <div id="exp-fields" style="display:none" class="exp-fields">
       <div class="cur-toggle">
@@ -674,7 +690,19 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
     <h3>修改行程</h3>
     <input type="hidden" id="edit-id">
     <div class="irow"><input type="date" id="edit-date"><input type="time" id="edit-time"></div>
-    <input type="text" id="edit-desc" placeholder="行程內容">
+    <input type="text" id="edit-desc" placeholder="行程標題">
+    <div class="cat-input-row">
+      <input type="text" id="edit-cat-input" placeholder="標籤（例：抵達、演出）" style="flex:1;min-width:0">
+      <div class="cat-presets">
+        <button class="qcat" data-cat="餐飲" onclick="pickCat('edit-cat-input',this.dataset.cat)">🍜</button>
+        <button class="qcat" data-cat="交通" onclick="pickCat('edit-cat-input',this.dataset.cat)">🚇</button>
+        <button class="qcat" data-cat="住宿" onclick="pickCat('edit-cat-input',this.dataset.cat)">🏠</button>
+        <button class="qcat" data-cat="紀念品" onclick="pickCat('edit-cat-input',this.dataset.cat)">🎁</button>
+        <button class="qcat" data-cat="出發" onclick="pickCat('edit-cat-input',this.dataset.cat)">✈️</button>
+        <button class="qcat" data-cat="抵達" onclick="pickCat('edit-cat-input',this.dataset.cat)">📍</button>
+      </div>
+    </div>
+    <textarea id="edit-note" placeholder="備註說明（選填）" rows="2" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--cream);font-family:'Noto Sans TC',sans-serif;font-size:13px;color:var(--ink);resize:vertical;margin-top:4px"></textarea>
     <div class="modal-btns"><button onclick="saveEdit()" class="btn">儲存</button><button onclick="closeEdit()" class="btn btn-ghost">取消</button></div>
   </div>
 </div>
@@ -703,19 +731,24 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
     </select>
     <div class="fl-lbl">分給誰</div>
     <div class="split-row">
-      <label id="qlb-Una" class="su"><input type="checkbox" id="qsp-Una" checked onchange="updQsp('Una')">Una</label>
-      <label id="qlb-Doris" class="sd"><input type="checkbox" id="qsp-Doris" checked onchange="updQsp('Doris')">Doris</label>
-      <label id="qlb-Eagle" class="se"><input type="checkbox" id="qsp-Eagle" checked onchange="updQsp('Eagle')">Eagle</label>
+      <label id="qlb-Una" class="su"><input type="checkbox" id="qsp-Una" checked>Una</label>
+      <label id="qlb-Doris" class="sd"><input type="checkbox" id="qsp-Doris" checked>Doris</label>
+      <label id="qlb-Eagle" class="se"><input type="checkbox" id="qsp-Eagle" checked>Eagle</label>
     </div>
-    <div style="display:flex;gap:8px;margin-top:4px">
-      <button onclick="submitQexp()" class="btn" style="flex:1;margin:0">記帳</button>
-      <button onclick="closeQexp()" class="btn btn-ghost" style="flex:1;margin:0">取消</button>
+    <div class="modal-btns">
+      <button onclick="addQexp()" class="btn">記帳</button>
+      <button onclick="closeQexp()" class="btn btn-ghost">取消</button>
     </div>
   </div>
 </div>
 
 
-<script>// Error handler for debugging
+</div><!-- /wrap -->
+
+
+
+<script>
+// Error handler for debugging
 window.onerror = function(msg, src, line, col, err) {
   var d = document.getElementById('js-error-bar');
   if (!d) { d = document.createElement('div'); d.id='js-error-bar'; d.style.cssText='position:fixed;top:0;left:0;right:0;background:red;color:white;font-size:11px;padding:4px 8px;z-index:9999;word-break:break-all'; document.body.appendChild(d); }
@@ -1205,6 +1238,18 @@ function checkMilestones() {
   }
 }
 
+
+var newCat = '';
+function pickCat(inputId, cat) {
+  var el = document.getElementById(inputId);
+  if (el) el.value = cat;
+}
+function setNewCat(cat, btn) {
+  newCat = cat;
+  document.querySelectorAll('#new-cat-row .qcat').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
 // ── SEATS ──
 var SEAT_SHOWS=[
   {label:'3/21 14:00 第一場', people:[
@@ -1308,7 +1353,9 @@ function addSch(){
   var desc=document.getElementById('new-desc').value.trim();
   if(!desc){alert('請輸入行程內容！');return}
   var schId=Date.now();
-  schs.push({date:date, time:time, desc:desc, id:schId});
+  var note = document.getElementById('new-note').value.trim();
+    var cat = document.getElementById('new-cat-input').value.trim();
+    schs.push({date:date, time:time, desc:desc, cat:cat, note:note, id:schId});
   sv('seoul_schs',schs);
   // 附帶記帳
   if(document.getElementById('tog-exp').checked){
@@ -1327,6 +1374,8 @@ function addSch(){
     document.getElementById('exp-fields').style.display='none';
   }
   document.getElementById('new-desc').value='';
+  document.getElementById('new-note').value='';
+  document.getElementById('new-cat-input').value='';
   renderSchs();
 }
 function renderSchs(){
@@ -1341,8 +1390,9 @@ function renderSchs(){
     el.innerHTML='<div class="tl-tc"><span class="tl-time">'+s.time+'</span></div>'+
       '<div class="tl-gap"></div>'+
       '<div class="tl-body">'+
-        '<div class="tl-cat">自訂</div>'+
+        '<div class="tl-cat">'+(s.cat||'自訂')+'</div>'+
         '<div class="tl-title">'+s.desc+'</div>'+
+        (s.note?'<div class="tl-desc">'+s.note+'</div>':'')+
         '<div class="tl-acts">'+
           '<button class="tl-btn" data-id="'+s.id+'" onclick="openEdit(+this.dataset.id)">✏ 修改</button>'+
           '<button class="tl-btn" data-id="'+s.id+'" onclick="delSch(+this.dataset.id)" style="color:var(--rust)">✖ 刪除</button>'+
@@ -1374,6 +1424,8 @@ function openEdit(id){
   document.getElementById('edit-date').value=s.date;
   document.getElementById('edit-time').value=s.time;
   document.getElementById('edit-desc').value=s.desc;
+  document.getElementById('edit-cat-input').value=s.cat||'';
+  document.getElementById('edit-note').value=s.note||'';
   document.getElementById('edit-modal').classList.add('on');
 }
 function closeEdit(){document.getElementById('edit-modal').classList.remove('on')}
@@ -1383,6 +1435,10 @@ function saveEdit(){
   s.date=document.getElementById('edit-date').value;
   s.time=document.getElementById('edit-time').value;
   s.desc=document.getElementById('edit-desc').value.trim();
+  s.cat=document.getElementById('edit-cat-input').value.trim();
+  s.note=document.getElementById('edit-note').value.trim();
+  s.cat=document.getElementById('edit-cat-input').value.trim();
+  s.note=document.getElementById('edit-note').value.trim();
   if(!s.desc){alert('請輸入行程！');return}
   sv('seoul_schs',schs);closeEdit();renderSchs();
 }
@@ -1645,6 +1701,7 @@ function init() {
 }
 window.onload = function(){ init(); updateCurrentHighlight(); };
 </script>
+
 </div><!-- /app-shell -->
 </body>
 </html>
