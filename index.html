@@ -1738,17 +1738,7 @@ function openSettleModal(id){
 }
 function closeSettleModal(){document.getElementById('settle-modal').classList.remove('on');}
 document.getElementById('settle-modal').addEventListener('click',function(ev){if(ev.target===this)closeSettleModal();});
-function confirmSettle(){
-  var e=exps.find(function(x){ return x.id===settleTargetId; });
-  if(!e)return;
-  var d=document.getElementById('settle-date-input').value;
-  var n=document.getElementById('settle-note-input').value.trim()||'完成結清';
-  var parts=d.split('-');var dateStr=parseInt(parts[1])+'/'+parseInt(parts[2]);
-  if(!e.history)e.history=[];
-  e.history.push({date:dateStr,note:'結清：'+n,fromAmt:e.amount,fromCur:e.cur||'krw',toAmt:0,toCur:e.cur||'krw'});
-  e.settled=true;e.settledDate=dateStr;e.settledNote=n;
-  sv('seoul_exps',exps);renderExps();closeSettleModal();
-}
+// confirmSettle unified below
 function undoSettle(id){
   var e=exps.find(function(x){ return x.id===id; });
   if(!e)return;
@@ -1773,8 +1763,6 @@ function openTransferSettle(key, from, to, amtStr){
   settleTargetId='_transfer_:'+key;
   document.getElementById('settle-modal').classList.add('on');
 }
-// Override confirmSettle to handle transfer keys
-var _origConfirmSettle = null;
 function confirmSettle(){
   if(typeof settleTargetId==='string' && settleTargetId.indexOf('_transfer_:')===0){
     var key=settleTargetId.replace('_transfer_:','');
