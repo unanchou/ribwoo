@@ -1791,10 +1791,20 @@ function renderExps(){
         origAmtLine+settledMeta+noteStr+histHtml+
         '<div class="tl-acts" style="margin-top:6px">'+editBtn+settleBtn+delBtn+'</div>'+
       '</div>'+
-      '<div class="exp-r">'+
-        '<div class="exp-amt">'+(isSettled?'₩0':'₩'+amtKRW.toLocaleString())+'</div>'+
-        (!isSettled&&amtTWD?'<div class="exp-twd">≈ NT$'+amtTWD.toLocaleString()+'</div>':'')+
-      '</div>'+
+      (function(){
+        if(isSettled) return '<div class="exp-r"><div class="exp-amt">₩0</div></div>';
+        if(showKRW_log){
+          return '<div class="exp-r">'+
+            '<div class="exp-amt">₩'+amtKRW.toLocaleString()+'</div>'+
+            (amtTWD?'<div class="exp-twd">≈ NT$'+amtTWD.toLocaleString()+'</div>':'')+
+          '</div>';
+        } else {
+          return '<div class="exp-r">'+
+            '<div class="exp-amt">'+(amtTWD?'NT$'+amtTWD.toLocaleString():'NT$—')+'</div>'+
+            '<div class="exp-twd">≈ ₩'+amtKRW.toLocaleString()+'</div>'+
+          '</div>';
+        }
+      })()+
     '</div>';
 
     if(!isSettled){
