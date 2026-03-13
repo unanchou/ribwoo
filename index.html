@@ -234,7 +234,7 @@ body.dark select option{background:var(--paper);color:var(--ink)}
 .sum-wrap{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:12px}
 .sum-total{padding:13px 15px;border-bottom:1px solid var(--line);font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--ink)}
 .sum-total span{font-size:12px;color:var(--ink3);font-weight:400;margin-left:8px}
-.sum-row{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-bottom:1px solid var(--line);font-size:14px}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-bottom:1px solid var(--line);font-size:14px;gap:12px}
 .sum-row:last-child{border-bottom:none}
 .pos{color:#4a9a30;font-weight:700}.neg{color:var(--rust);font-weight:700}.neu{color:var(--ink3)}
 .chart-wrap{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:16px}
@@ -616,16 +616,16 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
   </div>
 
   <div class="sec-hd"><span class="sec-en">log</span><span class="sec-rule"></span><span class="sec-zh">消費紀錄</span></div>
+  <div style="display:flex;gap:6px;margin:0 0 12px">
+    <button class="cur-btn active" id="log-tab-krw" onclick="swLogCur('krw',this)" style="flex:1;font-size:13px">₩ 韓幣 KRW</button>
+    <button class="cur-btn" id="log-tab-twd" onclick="swLogCur('twd',this)" style="flex:1;font-size:13px">NT$ 台幣 TWD</button>
+  </div>
   <div class="exp-wrap" id="exp-wrap"><div id="exp-list"></div></div>
   <div class="sum-wrap" id="sum-wrap" style="display:none"><div class="sum-total" id="sum-total"></div><div id="sum-rows"></div></div>
   <div class="sum-wrap" id="settle-wrap" style="display:none">
     <div class="sum-total">結清方式</div>
-    <div style="display:flex;gap:6px;margin:8px 0 4px">
-      <button class="smode-btn active" id="settle-tab-krw" onclick="swSettleTab('krw',this)">₩ 韓幣 KRW</button>
-      <button class="smode-btn" id="settle-tab-twd" onclick="swSettleTab('twd',this)">NT$ 台幣 TWD</button>
-    </div>
     <div id="settle-rows"></div>
-    <div id="settle-formula" style="margin-top:8px;font-size:12px;color:var(--ink3);border-top:1px solid var(--line);padding-top:8px;display:none"></div>
+    <div id="settle-formula" style="margin-top:0;font-size:12px;color:var(--ink3);border-top:1px solid var(--line);padding:10px 15px;display:none"></div>
   </div>
   <div class="chart-wrap" id="chart-wrap" style="display:none"><div class="chart-hed">各人已代墊</div><div id="chart-inner"></div></div>
 </div><!-- /page-expenses -->
@@ -1683,12 +1683,13 @@ function saveExpEdit(){
 // ── 結清 ──
 var settleTargetId=null;
 var settleTabCur='krw';
-function swSettleTab(cur,btn){
+function swLogCur(cur,btn){
   settleTabCur=cur;
-  document.querySelectorAll('#settle-tab-krw,#settle-tab-twd').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('#log-tab-krw,#log-tab-twd').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
   renderExps();
 }
+function swSettleTab(cur,btn){ swLogCur(cur,btn); }
 function openSettleModal(id){
   settleTargetId=id;
   var e=exps.find(function(x){ return x.id===id; });
@@ -1736,11 +1737,14 @@ function renderExps(){
   var paidKRW={Una:0,Doris:0,Eagle:0},owedKRW={Una:0,Doris:0,Eagle:0};
   var paidTWD={Una:0,Doris:0,Eagle:0},owedTWD={Una:0,Doris:0,Eagle:0};
   var totalKRW=0,totalTWD=0;
+  var showKRW_log=settleTabCur==='krw';
   var lh='';
 
   exps.forEach(function(e){
     var sw=e.splitWith||['Una','Doris','Eagle'];
     var isKRW=(e.cur||'krw')==='krw';
+    // 已結清的項目在兩個 tab 都顯示；未結清的依幣別篩選
+    if(!e.settled && (showKRW_log ? !isKRW : isKRW)) return;
     var amtKRW=e.amount;
     var amtTWD=toTwd(amtKRW);
     var shareMap={};
@@ -1824,19 +1828,21 @@ function renderExps(){
   });
 
   le.innerHTML=lh;
-  var tt=toTwd(totalKRW);
-  st.innerHTML='總花費　₩'+totalKRW.toLocaleString()+(tt?' <span>≈ NT$'+tt.toLocaleString()+'</span>':'')+(totalTWD?' ＋ NT$'+totalTWD.toLocaleString():'');
+  if(showKRW_log){
+    var tt=toTwd(totalKRW);
+    st.innerHTML='總花費　₩'+totalKRW.toLocaleString()+(tt?' <span>≈ NT$'+tt.toLocaleString()+'</span>':'');
+  } else {
+    st.innerHTML='總花費　NT$'+totalTWD.toLocaleString();
+  }
   var rh='';
   ['Una','Doris','Eagle'].forEach(function(p){
-    var bK=paidKRW[p]-owedKRW[p];
-    var bT=paidTWD[p]-owedTWD[p];
-    var parts=[];
-    if(bK>0.5)parts.push('<span class="pos">應拿回 ₩'+Math.round(bK).toLocaleString()+'</span>');
-    else if(bK<-0.5)parts.push('<span class="neg">應拿出 ₩'+Math.round(Math.abs(bK)).toLocaleString()+'</span>');
-    if(bT>0.5)parts.push('<span class="pos">應拿回 NT$'+Math.round(bT).toLocaleString()+'</span>');
-    else if(bT<-0.5)parts.push('<span class="neg">應拿出 NT$'+Math.round(Math.abs(bT)).toLocaleString()+'</span>');
-    if(!parts.length)parts.push('<span class="neu">無須補退</span>');
-    rh+='<div class="sum-row"><span>'+p+'</span><span>'+parts.join(' ')+'</span></div>';
+    var bal=showKRW_log?(paidKRW[p]-owedKRW[p]):(paidTWD[p]-owedTWD[p]);
+    var sym=showKRW_log?'₩':'NT$';
+    var part='';
+    if(bal>0.5) part='<span class="pos">應拿回 '+sym+Math.round(bal).toLocaleString()+'</span>';
+    else if(bal<-0.5) part='<span class="neg">應拿出 '+sym+Math.round(Math.abs(bal)).toLocaleString()+'</span>';
+    else part='<span class="neu">無須補退</span>';
+    rh+='<div class="sum-row"><span>'+p+'</span><span>'+part+'</span></div>';
   });
   sr.innerHTML=rh;sw_.style.display='block';
 
@@ -1861,7 +1867,7 @@ function renderExps(){
     while(ci2<cArr.length && di2<dArr.length){
       var tamt=Math.min(cArr[ci2].v, dArr[di2].v);
       if(tamt>0.5){
-        rows+='<div class="sum-row" style="padding:8px 0;border-bottom:1px solid var(--line)">'+
+        rows+='<div class="sum-row" style="padding:10px 15px;border-bottom:1px solid var(--line)">'+
           '<span style="font-size:14px"><b>'+dArr[di2].n+'</b> 轉給 <b>'+cArr[ci2].n+'</b></span>'+
           '<span class="neg" style="font-size:15px;font-weight:700">'+sym+Math.round(tamt).toLocaleString()+'</span>'+
           '</div>';
@@ -1933,24 +1939,33 @@ function renderExps(){
   if(!hasAny){
     document.getElementById('settle-wrap').style.display='none';
   } else {
-    var showKRW=settleTabCur==='krw';
-    var cur=showKRW?krwR:twdR;
-    document.getElementById('settle-rows').innerHTML=cur.rows||'<div class="sum-row" style="padding:8px 0"><span class="neu">此幣別無需轉帳</span></div>';
+    var cur=showKRW_log?krwR:twdR;
+    document.getElementById('settle-rows').innerHTML=cur.rows||'<div class="sum-row"><span class="neu">此幣別無需轉帳</span></div>';
     var fml=cur.formula||'';
     document.getElementById('settle-formula').innerHTML=fml;
     document.getElementById('settle-formula').style.display=fml?'block':'none';
     document.getElementById('settle-wrap').style.display='block';
   }
 
-  var mxK=Math.max(paidKRW.Una,paidKRW.Doris,paidKRW.Eagle,1);
   var ch='';
-  ['Una','Doris','Eagle'].forEach(function(p){
-    var pct=Math.round(paidKRW[p]/mxK*100);
-    var tw2=toTwd(paidKRW[p]);
-    var fc={Una:'fu',Doris:'fd',Eagle:'fe'}[p];
-    ch+='<div class="chart-lbl"><span>'+p+'</span><span>₩'+paidKRW[p].toLocaleString()+(tw2?' · NT$'+tw2.toLocaleString():'')+' </span></div>'+
-      '<div class="chart-bg"><div class="chart-fill '+fc+'" style="width:'+pct+'%"></div></div>';
-  });
+  if(showKRW_log){
+    var mxK=Math.max(paidKRW.Una,paidKRW.Doris,paidKRW.Eagle,1);
+    ['Una','Doris','Eagle'].forEach(function(p){
+      var pct=Math.round(paidKRW[p]/mxK*100);
+      var tw2=toTwd(paidKRW[p]);
+      var fc={Una:'fu',Doris:'fd',Eagle:'fe'}[p];
+      ch+='<div class="chart-lbl"><span>'+p+'</span><span>₩'+paidKRW[p].toLocaleString()+(tw2?' · NT$'+tw2.toLocaleString():'')+' </span></div>'+
+        '<div class="chart-bg"><div class="chart-fill '+fc+'" style="width:'+pct+'%"></div></div>';
+    });
+  } else {
+    var mxT=Math.max(paidTWD.Una,paidTWD.Doris,paidTWD.Eagle,1);
+    ['Una','Doris','Eagle'].forEach(function(p){
+      var pct=Math.round(paidTWD[p]/mxT*100);
+      var fc={Una:'fu',Doris:'fd',Eagle:'fe'}[p];
+      ch+='<div class="chart-lbl"><span>'+p+'</span><span>NT$'+paidTWD[p].toLocaleString()+' </span></div>'+
+        '<div class="chart-bg"><div class="chart-fill '+fc+'" style="width:'+pct+'%"></div></div>';
+    });
+  }
   ci.innerHTML=ch;cw.style.display='block';
 }
 // ── ASYNC INIT：從雲端載入資料 ──
