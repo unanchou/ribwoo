@@ -604,6 +604,8 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
       </div>
       <div id="ratio-preview" style="font-size:12px;color:var(--sage);margin-top:6px;min-height:18px"></div>
     </div>
+    <div class="fl-lbl" style="margin-top:8px">備註（選填）</div>
+    <input type="text" id="sa-note" placeholder="備註，例：3/10 已結清">
     <button onclick="addSaExp()" class="btn" style="margin-top:10px">記帳</button>
   </div>
 
@@ -616,7 +618,15 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
   <div class="sec-hd"><span class="sec-en">log</span><span class="sec-rule"></span><span class="sec-zh">消費紀錄</span></div>
   <div class="exp-wrap" id="exp-wrap"><div id="exp-list"></div></div>
   <div class="sum-wrap" id="sum-wrap" style="display:none"><div class="sum-total" id="sum-total"></div><div id="sum-rows"></div></div>
-  <div class="sum-wrap" id="settle-wrap" style="display:none"><div class="sum-total">結清方式</div><div id="settle-rows"></div></div>
+  <div class="sum-wrap" id="settle-wrap" style="display:none">
+    <div class="sum-total">結清方式</div>
+    <div style="display:flex;gap:6px;margin:8px 0 4px">
+      <button class="smode-btn active" id="settle-tab-krw" onclick="swSettleTab('krw',this)">₩ 韓幣 KRW</button>
+      <button class="smode-btn" id="settle-tab-twd" onclick="swSettleTab('twd',this)">NT$ 台幣 TWD</button>
+    </div>
+    <div id="settle-rows"></div>
+    <div id="settle-formula" style="margin-top:8px;font-size:12px;color:var(--ink3);border-top:1px solid var(--line);padding-top:8px;display:none"></div>
+  </div>
   <div class="chart-wrap" id="chart-wrap" style="display:none"><div class="chart-hed">各人已代墊</div><div id="chart-inner"></div></div>
 </div><!-- /page-expenses -->
 
@@ -700,6 +710,53 @@ body.dark .tabbar{background:rgba(46,34,16,.96)}
     </div>
     <textarea id="edit-note" placeholder="備註說明（選填）" rows="2" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--cream);font-family:'Noto Sans TC',sans-serif;font-size:13px;color:var(--ink);resize:vertical;margin-top:4px"></textarea>
     <div class="modal-btns"><button onclick="saveEdit()" class="btn">儲存</button><button onclick="closeEdit()" class="btn btn-ghost">取消</button></div>
+  </div>
+</div>
+
+<!-- Edit expense modal -->
+<div class="mbg" id="exp-edit-modal">
+  <div class="modal-sheet">
+    <h3>✏ 編輯費用</h3>
+    <input type="hidden" id="ee-id">
+    <div class="fl-lbl">消費項目</div>
+    <input type="text" id="ee-name" placeholder="項目名稱">
+    <div class="cur-toggle" style="margin-top:8px">
+      <button class="cur-btn active" id="ee-cur-krw" data-cur="krw" onclick="setEeCur('krw',this)">₩ 韓元</button>
+      <button class="cur-btn" id="ee-cur-twd" data-cur="twd" onclick="setEeCur('twd',this)">NT$ 台幣</button>
+    </div>
+    <input type="number" id="ee-amt" placeholder="金額" inputmode="numeric" style="margin-top:6px">
+    <div class="fl-lbl" style="margin-top:8px">代墊人</div>
+    <select id="ee-payer">
+      <option value="Una">Una 先代墊</option>
+      <option value="Doris">Doris 先代墊</option>
+      <option value="Eagle">Eagle 先代墊</option>
+    </select>
+    <div class="fl-lbl" style="margin-top:8px">備註</div>
+    <input type="text" id="ee-note" placeholder="備註說明">
+    <div id="ee-history" style="margin-top:10px;font-size:12px;color:var(--ink3);display:none">
+      <div style="font-weight:600;margin-bottom:4px">📋 變更紀錄</div>
+      <div id="ee-history-list"></div>
+    </div>
+    <div class="modal-btns" style="margin-top:14px">
+      <button onclick="saveExpEdit()" class="btn">儲存</button>
+      <button onclick="closeExpEdit()" class="btn btn-ghost">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settle expense modal -->
+<div class="mbg" id="settle-modal">
+  <div class="modal-sheet">
+    <h3>✓ 標記結清</h3>
+    <div id="settle-modal-desc" style="font-size:13px;color:var(--ink2);margin-bottom:12px"></div>
+    <div class="fl-lbl">結清日期</div>
+    <input type="date" id="settle-date-input">
+    <div class="fl-lbl" style="margin-top:8px">備註</div>
+    <input type="text" id="settle-note-input" placeholder="例：已匯款、現金交付">
+    <div class="modal-btns" style="margin-top:14px">
+      <button onclick="confirmSettle()" class="btn">確認結清</button>
+      <button onclick="closeSettleModal()" class="btn btn-ghost">取消</button>
+    </div>
   </div>
 </div>
 
@@ -818,7 +875,7 @@ function subscribeRealtime() {
 
 // 舊的 sv() 保留介面，改成雲端寫
 function sv(k, v) {
-  localStorage.setItem(k, JSON.stringify(v)); // 本地也存，當快取
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {}
   dbSet(k, v);
 }
 
@@ -826,7 +883,7 @@ function sv(k, v) {
 function togDark(){
   var on=document.body.classList.toggle('dark');
   document.getElementById('dark-btn').textContent=on?'☀️ 亮色':'🌙 深色';
-  localStorage.setItem('seoul_dark',on?'1':'0');
+  try { localStorage.setItem('seoul_dark',on?'1':'0'); } catch(e) {}
 }
 // dark mode applied in window.onload
 
@@ -1506,10 +1563,12 @@ function addSaExp(){
     splitWith=names.filter(function(_,i){ return vals[i]>0; });
     ratios={};names.forEach(function(n,i){if(vals[i]>0)ratios[n]=vals[i];});
   }
-  exps.push({name:name, amount:amt, payer:payer, splitWith:splitWith, ratios:ratios, cat:'其他', id:Date.now()});
+  var saNote=document.getElementById('sa-note').value.trim();
+  exps.push({name:name, amount:amt, cur:saCur, payer:payer, splitWith:splitWith, ratios:ratios, cat:'其他', id:Date.now(), note:saNote, history:[], settled:false});
   sv('seoul_exps',exps);renderExps();
   document.getElementById('sa-name').value='';
   document.getElementById('sa-amt').value='';
+  document.getElementById('sa-note').value='';
   if(saMode==='ratio')['Una','Doris','Eagle'].forEach(function(n){document.getElementById('ratio-'+n).value='';});
   document.getElementById('ratio-preview').textContent='';
   var btn=document.querySelector('#page-expenses .btn');
@@ -1547,10 +1606,12 @@ function submitQexp(){
   var sw=['Una','Doris','Eagle'].filter(function(x){ return document.getElementById('qsp-'+x).checked; });
   if(!amt||amt<=0){alert('請輸入金額！');return}
   if(!sw.length){alert('請選擇分帳對象！');return}
-  exps.push({name:name, amount:amt, payer:payer, splitWith:sw, cat:qCat||'其他', id:Date.now()});
+  var qNote=document.getElementById('q-note').value.trim();
+  exps.push({name:name, amount:amt, cur:qCur, payer:payer, splitWith:sw, cat:qCat||'其他', id:Date.now(), note:qNote, history:[], settled:false});
   sv('seoul_exps',exps);renderExps();
   document.getElementById('q-name').value='';
   document.getElementById('q-amt').value='';
+  document.getElementById('q-note').value='';
   document.querySelectorAll('.qcat').forEach(function(b){ b.classList.remove('active'); });
   qCat='';qCur='krw';
   document.getElementById('q-cur-krw').classList.add('active');
@@ -1558,7 +1619,108 @@ function submitQexp(){
   closeQexp();
 }
 
-function delExp(id){exps=exps.filter(function(e){ return e.id!==id; });sv('seoul_exps',exps);renderExps()}
+function delExp(id){exps=exps.filter(function(e){ return e.id!==id; });sv('seoul_exps',exps);renderExps();}
+
+// ── 編輯費用 ──
+var eeEditingCur='krw';
+function openExpEdit(id){
+  var e=exps.find(function(x){ return x.id===id; });
+  if(!e)return;
+  document.getElementById('ee-id').value=id;
+  document.getElementById('ee-name').value=e.name;
+  document.getElementById('ee-note').value=e.note||'';
+  eeEditingCur=e.cur||'krw';
+  var displayAmt=e.amount;
+  if(eeEditingCur==='twd'){var r=getRate();displayAmt=r?Math.round(e.amount/r):e.amount;}
+  document.getElementById('ee-amt').value=displayAmt;
+  document.getElementById('ee-payer').value=e.payer;
+  document.getElementById('ee-cur-krw').classList.toggle('active',eeEditingCur==='krw');
+  document.getElementById('ee-cur-twd').classList.toggle('active',eeEditingCur==='twd');
+  var hist=e.history||[];
+  if(hist.length){
+    document.getElementById('ee-history').style.display='block';
+    document.getElementById('ee-history-list').innerHTML=hist.map(function(h){
+      return '<div style="padding:3px 0;border-bottom:1px solid var(--line)">'+h.date+' · '+h.note+
+        (h.fromAmt!==undefined?' <span style="text-decoration:line-through;color:var(--ink3)">'+(h.fromCur==='krw'?'₩':'NT$')+h.fromAmt.toLocaleString()+'</span> → '+(h.toCur==='krw'?'₩':'NT$')+h.toAmt.toLocaleString():'')+
+        '</div>';
+    }).join('');
+  } else {
+    document.getElementById('ee-history').style.display='none';
+  }
+  document.getElementById('exp-edit-modal').classList.add('on');
+}
+function setEeCur(cur,btn){
+  eeEditingCur=cur;
+  document.querySelectorAll('#ee-cur-krw,#ee-cur-twd').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+function closeExpEdit(){document.getElementById('exp-edit-modal').classList.remove('on');}
+document.getElementById('exp-edit-modal').addEventListener('click',function(e){if(e.target===this)closeExpEdit();});
+function saveExpEdit(){
+  var id=parseInt(document.getElementById('ee-id').value);
+  var e=exps.find(function(x){ return x.id===id; });
+  if(!e)return;
+  var newNote=document.getElementById('ee-note').value.trim();
+  var rawAmt=parseInt(document.getElementById('ee-amt').value)||0;
+  var newAmt=toKrw(rawAmt,eeEditingCur);
+  if(newAmt===null)return;
+  var newName=document.getElementById('ee-name').value.trim()||e.name;
+  var newPayer=document.getElementById('ee-payer').value;
+  if(!e.history)e.history=[];
+  var changed=[];
+  if(newAmt!==e.amount)changed.push('金額 '+(e.cur==='krw'?'₩':'NT$')+e.amount.toLocaleString()+'→'+(eeEditingCur==='krw'?'₩':'NT$')+rawAmt.toLocaleString());
+  if(newName!==e.name)changed.push('名稱「'+e.name+'」→「'+newName+'」');
+  if(newPayer!==e.payer)changed.push('代墊人 '+e.payer+'→'+newPayer);
+  if(newNote!==e.note)changed.push('備註更新');
+  if(changed.length){
+    var today=new Date();var mm=today.getMonth()+1;var dd=today.getDate();
+    e.history.push({date:mm+'/'+dd,note:changed.join('；'),fromAmt:e.amount,fromCur:e.cur||'krw',toAmt:rawAmt,toCur:eeEditingCur});
+  }
+  e.name=newName;e.amount=newAmt;e.cur=eeEditingCur;e.payer=newPayer;e.note=newNote;
+  sv('seoul_exps',exps);renderExps();closeExpEdit();
+}
+
+// ── 結清 ──
+var settleTargetId=null;
+var settleTabCur='krw';
+function swSettleTab(cur,btn){
+  settleTabCur=cur;
+  document.querySelectorAll('#settle-tab-krw,#settle-tab-twd').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderExps();
+}
+function openSettleModal(id){
+  settleTargetId=id;
+  var e=exps.find(function(x){ return x.id===id; });
+  if(!e)return;
+  var today=new Date();
+  var mm=String(today.getMonth()+1).padStart(2,'0');
+  var dd=String(today.getDate()).padStart(2,'0');
+  document.getElementById('settle-date-input').value=today.getFullYear()+'-'+mm+'-'+dd;
+  document.getElementById('settle-note-input').value='';
+  document.getElementById('settle-modal-desc').textContent='「'+e.name+'」'+(e.cur==='twd'?'NT$':'₩')+e.amount.toLocaleString()+' · '+e.payer+' 代墊';
+  document.getElementById('settle-modal').classList.add('on');
+}
+function closeSettleModal(){document.getElementById('settle-modal').classList.remove('on');}
+document.getElementById('settle-modal').addEventListener('click',function(ev){if(ev.target===this)closeSettleModal();});
+function confirmSettle(){
+  var e=exps.find(function(x){ return x.id===settleTargetId; });
+  if(!e)return;
+  var d=document.getElementById('settle-date-input').value;
+  var n=document.getElementById('settle-note-input').value.trim()||'完成結清';
+  var parts=d.split('-');var dateStr=parseInt(parts[1])+'/'+parseInt(parts[2]);
+  if(!e.history)e.history=[];
+  e.history.push({date:dateStr,note:'結清：'+n,fromAmt:e.amount,fromCur:e.cur||'krw',toAmt:0,toCur:e.cur||'krw'});
+  e.settled=true;e.settledDate=dateStr;e.settledNote=n;
+  sv('seoul_exps',exps);renderExps();closeSettleModal();
+}
+function undoSettle(id){
+  var e=exps.find(function(x){ return x.id===id; });
+  if(!e)return;
+  e.settled=false;e.settledDate='';e.settledNote='';
+  sv('seoul_exps',exps);renderExps();
+}
+
 function renderExps(){
   var le=document.getElementById('exp-list');
   var sw_=document.getElementById('sum-wrap');
@@ -1568,94 +1730,226 @@ function renderExps(){
   var ci=document.getElementById('chart-inner');
   if(!exps.length){
     le.innerHTML='<div style="padding:18px 15px;text-align:center;font-size:13px;color:var(--ink3)">目前沒有消費紀錄</div>';
-    sw_.style.display='none';cw.style.display='none';return;
+    sw_.style.display='none';cw.style.display='none';
+    document.getElementById('settle-wrap').style.display='none';return;
   }
-  var paid={Una:0,Doris:0,Eagle:0},owed={Una:0,Doris:0,Eagle:0};
-  var total=0,lh='';
+  var paidKRW={Una:0,Doris:0,Eagle:0},owedKRW={Una:0,Doris:0,Eagle:0};
+  var paidTWD={Una:0,Doris:0,Eagle:0},owedTWD={Una:0,Doris:0,Eagle:0};
+  var totalKRW=0,totalTWD=0;
+  var lh='';
+
   exps.forEach(function(e){
     var sw=e.splitWith||['Una','Doris','Eagle'];
-    var tw=toTwd(e.amount);
-    var metaStr,shareMap={};
+    var isKRW=(e.cur||'krw')==='krw';
+    var amtKRW=e.amount;
+    var amtTWD=toTwd(amtKRW);
+    var shareMap={};
+    var metaStr;
     if(e.ratios){
-      // 比例分帳
-      var totalR=0; for(var _p in e.ratios){ if(e.ratios.hasOwnProperty(_p)) totalR+=e.ratios[_p]; }
-      sw.forEach(function(p){shareMap[p]=Math.round(e.amount*e.ratios[p]/totalR);});
-      // rounding adjustment
-      var diff=e.amount-(function(){ var _s=0; for(var _k in shareMap){ if(shareMap.hasOwnProperty(_k)) _s+=shareMap[_k]; } return _s; })();
+      var totalR=0;
+      for(var _p in e.ratios){ if(e.ratios.hasOwnProperty(_p)) totalR+=e.ratios[_p]; }
+      sw.forEach(function(p){shareMap[p]=Math.round(amtKRW*e.ratios[p]/totalR);});
+      var diff=amtKRW-(function(){ var _s=0; for(var _k in shareMap){ if(shareMap.hasOwnProperty(_k)) _s+=shareMap[_k]; } return _s; })();
       if(diff&&sw.length)shareMap[sw[0]]+=diff;
       metaStr=sw.map(function(p){ return p+' ×'+e.ratios[p]+'份 ₩'+shareMap[p].toLocaleString(); }).join('　');
     } else {
-      var sh=Math.round(e.amount/sw.length);
+      var sh=Math.round(amtKRW/sw.length);
       sw.forEach(function(p){shareMap[p]=sh;});
-      var diff=e.amount-sh*sw.length;
-      if(diff&&sw.length)shareMap[sw[0]]+=diff;
+      var diff2=amtKRW-sh*sw.length;
+      if(diff2&&sw.length)shareMap[sw[0]]+=diff2;
       metaStr='分帳：'+sw.join(' / ')+' · 每人 ₩'+sh.toLocaleString();
     }
-    lh+='<div class="exp-row">'+
+    var isSettled=e.settled||false;
+    var hist=e.history||[];
+    var histHtml='';
+    if(hist.length){
+      histHtml='<div style="margin-top:6px"><details><summary style="font-size:11px;color:var(--ink3);cursor:pointer">📋 查看變更紀錄（'+hist.length+'筆）</summary>'+
+        hist.map(function(h){
+          var amtPart='';
+          if(h.fromAmt!==undefined) amtPart=' <span style="text-decoration:line-through;opacity:.6">'+(h.fromCur==='krw'?'₩':'NT$')+h.fromAmt.toLocaleString()+'</span> → '+(h.toCur==='krw'?'₩':'NT$')+h.toAmt.toLocaleString();
+          return '<div style="padding:2px 0;font-size:11px;color:var(--ink3)">'+h.date+'　'+h.note+amtPart+'</div>';
+        }).join('')+'</details></div>';
+    }
+    var settleBtn=isSettled
+      ?'<button class="tl-btn" style="color:var(--sage)" onclick="undoSettle('+e.id+')">↩ 取消結清</button>'
+      :'<button class="tl-btn" style="color:var(--sage)" onclick="openSettleModal('+e.id+')">✓ 結清</button>';
+    var editBtn='<button class="tl-btn" onclick="openExpEdit('+e.id+')">✏ 編輯</button>';
+    var delBtn='<button class="tl-btn" style="color:var(--rust)" onclick="delExp('+e.id+')">✖ 刪除</button>';
+    var settledBadge=isSettled?'<span style="display:inline-block;background:var(--sage);color:var(--paper);font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;margin-left:6px">✓ 已結清</span>':'';
+    var noteStr=e.note?'<div style="font-size:11px;color:var(--ink3);margin-top:2px">📝 '+e.note+'</div>':'';
+    var settledMeta=isSettled?'<div style="font-size:11px;color:var(--sage);margin-top:2px">'+e.settledDate+'　'+(e.settledNote||'完成結清')+'</div>':'';
+    var origAmtLine=isSettled?'<div style="font-size:11px;color:var(--ink3)">原金額 <s>₩'+amtKRW.toLocaleString()+(amtTWD?' ≈ NT$'+amtTWD.toLocaleString():'')+' </s></div>':'';
+    var cardStyle=isSettled?'opacity:.72;':'';
+    lh+='<div class="exp-row" style="'+cardStyle+'">'+
       '<div style="min-width:0;flex:1">'+
-        '<div class="exp-name">'+e.name+'<span class="exp-who">'+e.payer+'</span></div>'+
-        '<div class="exp-meta">'+metaStr+'</div>'+
+        '<div class="exp-name">'+(isSettled?'<s>':'')+e.name+(isSettled?'</s>':'')+settledBadge+'<span class="exp-who">'+e.payer+'</span></div>'+
+        (isSettled?'':('<div class="exp-meta">'+metaStr+'</div>'))+
+        origAmtLine+settledMeta+noteStr+histHtml+
+        '<div class="tl-acts" style="margin-top:6px">'+editBtn+settleBtn+delBtn+'</div>'+
       '</div>'+
       '<div class="exp-r">'+
-        '<div class="exp-amt">₩'+e.amount.toLocaleString()+' <span class="del" data-eid="'+e.id+'" onclick="delExp(+this.dataset.eid)">✖</span></div>'+
-        (tw?'<div class="exp-twd">≈ NT$'+tw.toLocaleString()+'</div>':'')+
+        '<div class="exp-amt">'+(isSettled?'₩0':'₩'+amtKRW.toLocaleString())+'</div>'+
+        (!isSettled&&amtTWD?'<div class="exp-twd">≈ NT$'+amtTWD.toLocaleString()+'</div>':'')+
       '</div>'+
     '</div>';
-    paid[e.payer]+=e.amount;
-    sw.forEach(function(p){ return owed[p]+=shareMap[p]||0; });
-    total+=e.amount;
+
+    if(!isSettled){
+      if(isKRW){
+        paidKRW[e.payer]+=amtKRW;
+        sw.forEach(function(p){ owedKRW[p]+=shareMap[p]||0; });
+        totalKRW+=amtKRW;
+      } else {
+        var r=getRate();
+        if(r){
+          var shareMapTWD={};
+          if(e.ratios){
+            var totalR2=0;
+            for(var _p2 in e.ratios){ if(e.ratios.hasOwnProperty(_p2)) totalR2+=e.ratios[_p2]; }
+            sw.forEach(function(p){shareMapTWD[p]=Math.round((amtKRW/r)*e.ratios[p]/totalR2);});
+          } else {
+            var shT=Math.round((amtKRW/r)/sw.length);
+            sw.forEach(function(p){shareMapTWD[p]=shT;});
+          }
+          var origTWDAmt=Math.round(amtKRW/r);
+          paidTWD[e.payer]+=origTWDAmt;
+          sw.forEach(function(p){ owedTWD[p]+=shareMapTWD[p]||0; });
+          totalTWD+=origTWDAmt;
+        } else {
+          paidKRW[e.payer]+=amtKRW;
+          sw.forEach(function(p){ owedKRW[p]+=shareMap[p]||0; });
+          totalKRW+=amtKRW;
+        }
+      }
+    }
   });
+
   le.innerHTML=lh;
-  var tt=toTwd(total);
-  st.innerHTML='總花費　₩'+total.toLocaleString()+(tt?'<span>≈ NT$'+tt.toLocaleString()+'</span>':'');
+  var tt=toTwd(totalKRW);
+  st.innerHTML='總花費　₩'+totalKRW.toLocaleString()+(tt?' <span>≈ NT$'+tt.toLocaleString()+'</span>':'')+(totalTWD?' ＋ NT$'+totalTWD.toLocaleString():'');
   var rh='';
   ['Una','Doris','Eagle'].forEach(function(p){
-    var b=paid[p]-owed[p],t2=toTwd(Math.abs(b));
-    var tn=t2?' (≈NT$'+t2.toLocaleString()+')':'' ;
-    if(b>0)rh+='<div class="sum-row"><span>'+p+'</span><span class="pos">應拿回 ₩'+b.toLocaleString()+tn+'</span></div>';
-    else if(b<0)rh+='<div class="sum-row"><span>'+p+'</span><span class="neg">應拿出 ₩'+Math.abs(b).toLocaleString()+tn+'</span></div>';
-    else rh+='<div class="sum-row"><span>'+p+'</span><span class="neu">無須補退</span></div>';
+    var bK=paidKRW[p]-owedKRW[p];
+    var bT=paidTWD[p]-owedTWD[p];
+    var parts=[];
+    if(bK>0.5)parts.push('<span class="pos">應拿回 ₩'+Math.round(bK).toLocaleString()+'</span>');
+    else if(bK<-0.5)parts.push('<span class="neg">應拿出 ₩'+Math.round(Math.abs(bK)).toLocaleString()+'</span>');
+    if(bT>0.5)parts.push('<span class="pos">應拿回 NT$'+Math.round(bT).toLocaleString()+'</span>');
+    else if(bT<-0.5)parts.push('<span class="neg">應拿出 NT$'+Math.round(Math.abs(bT)).toLocaleString()+'</span>');
+    if(!parts.length)parts.push('<span class="neu">無須補退</span>');
+    rh+='<div class="sum-row"><span>'+p+'</span><span>'+parts.join(' ')+'</span></div>';
   });
   sr.innerHTML=rh;sw_.style.display='block';
 
-  // ── 結清方式（最少轉帳筆數）──
-  var settle=document.getElementById('settle-wrap');
-  var settleRows=document.getElementById('settle-rows');
-  // 計算每人淨額
-  var bal={Una:paid.Una-owed.Una, Doris:paid.Doris-owed.Doris, Eagle:paid.Eagle-owed.Eagle};
-  // 分成債主（正）和債務人（負）
-  var creditors=[]; for(var _n in bal){ if(bal.hasOwnProperty(_n) && bal[_n]>0) creditors.push([_n,bal[_n]]); } creditors.sort(function(a,b){ return b[1]-a[1]; });
-  var debtors=[]; for(var _m in bal){ if(bal.hasOwnProperty(_m) && bal[_m]<0) debtors.push([_m,bal[_m]]); } debtors.sort(function(a,b){ return a[1]-b[1]; });
-  if(!creditors.length){settle.style.display='none';}
-  else{
-    var sh='';
-    var cred=creditors.map(function(arr){ return {n:arr[0], v:arr[1]}; });
-    var debt=debtors.map(function(arr){ return {n:arr[0], v:-arr[1]}; });
-    var ci=0,di=0;
-    while(ci<cred.length&&di<debt.length){
-      var amt=Math.min(cred[ci].v,debt[di].v);
-      if(amt>0){
-        var tw=toTwd(amt);
-        sh+='<div class="sum-row">'+
-          '<span><b>'+debt[di].n+'</b> 轉給 <b>'+cred[ci].n+'</b></span>'+
-          '<span class="neg">₩'+amt.toLocaleString()+(tw?' <span style="font-size:11px;color:var(--ink3)">≈NT$'+tw.toLocaleString()+'</span>':'')+
-          '</span></div>';
-        cred[ci].v-=amt;
-        debt[di].v-=amt;
+  // 結清方式（KRW / TWD 分開）
+  // ── 結清方式計算（含逐筆明細）──
+  function calcSettleRows(paid, owed, sym, isKRWmode){
+    var bal={Una:paid.Una-owed.Una, Doris:paid.Doris-owed.Doris, Eagle:paid.Eagle-owed.Eagle};
+    var creditors=[], debtors=[];
+    for(var _n in bal){ if(bal.hasOwnProperty(_n)){
+      if(bal[_n]>0.5) creditors.push({n:_n, v:bal[_n]});
+      else if(bal[_n]<-0.5) debtors.push({n:_n, v:-bal[_n]});
+    }}
+    creditors.sort(function(a,b){ return b.v-a.v; });
+    debtors.sort(function(a,b){ return b.v-a.v; });
+    if(!creditors.length&&!debtors.length) return {rows:'', formula:''};
+
+    // ── 轉帳指示 ──
+    var rows='';
+    var cArr=creditors.map(function(x){ return {n:x.n,v:x.v}; });
+    var dArr=debtors.map(function(x){ return {n:x.n,v:x.v}; });
+    var ci2=0, di2=0;
+    while(ci2<cArr.length && di2<dArr.length){
+      var tamt=Math.min(cArr[ci2].v, dArr[di2].v);
+      if(tamt>0.5){
+        rows+='<div class="sum-row" style="padding:8px 0;border-bottom:1px solid var(--line)">'+
+          '<span style="font-size:14px"><b>'+dArr[di2].n+'</b> 轉給 <b>'+cArr[ci2].n+'</b></span>'+
+          '<span class="neg" style="font-size:15px;font-weight:700">'+sym+Math.round(tamt).toLocaleString()+'</span>'+
+          '</div>';
+        cArr[ci2].v-=tamt; dArr[di2].v-=tamt;
       }
-      if(cred[ci].v<1)ci++;
-      if(debt[di].v<1)di++;
+      if(cArr[ci2].v<0.5) ci2++;
+      if(dArr[di2].v<0.5) di2++;
     }
-    settleRows.innerHTML=sh||'<div class="sum-row"><span class="neu">已結清，無需轉帳</span></div>';
-    settle.style.display='block';
+
+    // ── 逐人計算明細 ──
+    var formula='<div style="margin-bottom:8px;font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--ink3)">─ 計算明細 ─</div>';
+    ['Una','Doris','Eagle'].forEach(function(p){
+      var pd=Math.round(paid[p]), ow=Math.round(owed[p]);
+      var net=pd-ow;
+
+      // 代墊項目明細
+      var payedItems=[], owedItems=[];
+      exps.forEach(function(e){
+        if(e.settled) return;
+        var eIsKRW=(e.cur||'krw')==='krw';
+        if(isKRWmode && !eIsKRW) return;
+        if(!isKRWmode && eIsKRW) return;
+        var amtKRW=e.amount;
+        var r=getRate();
+        var dispAmt=isKRWmode ? amtKRW : (r ? Math.round(amtKRW/r) : amtKRW);
+        var sw=e.splitWith||['Una','Doris','Eagle'];
+        // 代墊
+        if(e.payer===p){
+          payedItems.push(e.name+' '+sym+dispAmt.toLocaleString());
+        }
+        // 應付（是分帳對象）
+        if(sw.indexOf(p)>=0){
+          var shareAmt;
+          if(e.ratios){
+            var totalR=0; for(var _k in e.ratios){ if(e.ratios.hasOwnProperty(_k)) totalR+=e.ratios[_k]; }
+            shareAmt=isKRWmode ? Math.round(amtKRW*e.ratios[p]/totalR) : (r?Math.round((amtKRW/r)*e.ratios[p]/totalR):0);
+          } else {
+            shareAmt=isKRWmode ? Math.round(amtKRW/sw.length) : (r?Math.round((amtKRW/r)/sw.length):0);
+          }
+          if(shareAmt>0) owedItems.push(e.name+' '+sym+shareAmt.toLocaleString());
+        }
+      });
+
+      var dotColor={Una:'var(--una)',Doris:'var(--doris)',Eagle:'var(--eagle)'}[p];
+      var netClass=net>0.5?'pos':net<-0.5?'neg':'neu';
+      var netLabel=net>0.5?('應拿回 '+sym+Math.abs(net).toLocaleString()):net<-0.5?('應補繳 '+sym+Math.abs(net).toLocaleString()):'已平衡';
+
+      formula+='<div style="margin-bottom:10px;padding:8px 10px;background:var(--cream);border-radius:8px;border-left:3px solid '+dotColor+'">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">'+
+          '<b style="font-size:13px">'+p+'</b>'+
+          '<span class="'+netClass+'" style="font-size:13px;font-weight:700">'+netLabel+'</span>'+
+        '</div>'+
+        '<div style="font-size:12px;color:var(--ink2);line-height:1.8">'+
+          '<span style="color:var(--ink3)">代墊</span>　'+sym+pd.toLocaleString()+
+          (payedItems.length ? ' <span style="color:var(--ink3);font-size:11px">（'+payedItems.join('、')+'）</span>' : '')+
+          '<br>'+
+          '<span style="color:var(--ink3)">應付</span>　'+sym+ow.toLocaleString()+
+          (owedItems.length ? ' <span style="color:var(--ink3);font-size:11px">（'+owedItems.join('、')+'）</span>' : '')+
+          '<br>'+
+          '<span style="color:var(--ink3)">淨額</span>　'+sym+pd.toLocaleString()+' − '+sym+ow.toLocaleString()+' ＝ <span class="'+netClass+'">'+netLabel+'</span>'+
+        '</div>'+
+      '</div>';
+    });
+    return {rows:rows, formula:formula};
   }
-  var mx=Math.max(paid.Una, paid.Doris, paid.Eagle, 1);
+  var krwR=calcSettleRows(paidKRW,owedKRW,'₩',true);
+  var twdR=calcSettleRows(paidTWD,owedTWD,'NT$',false);
+  var hasAny=krwR.rows||twdR.rows;
+  if(!hasAny){
+    document.getElementById('settle-wrap').style.display='none';
+  } else {
+    var showKRW=settleTabCur==='krw';
+    var cur=showKRW?krwR:twdR;
+    document.getElementById('settle-rows').innerHTML=cur.rows||'<div class="sum-row" style="padding:8px 0"><span class="neu">此幣別無需轉帳</span></div>';
+    var fml=cur.formula||'';
+    document.getElementById('settle-formula').innerHTML=fml;
+    document.getElementById('settle-formula').style.display=fml?'block':'none';
+    document.getElementById('settle-wrap').style.display='block';
+  }
+
+  var mxK=Math.max(paidKRW.Una,paidKRW.Doris,paidKRW.Eagle,1);
   var ch='';
   ['Una','Doris','Eagle'].forEach(function(p){
-    var pct=Math.round(paid[p]/mx*100),tw2=toTwd(paid[p]);
+    var pct=Math.round(paidKRW[p]/mxK*100);
+    var tw2=toTwd(paidKRW[p]);
     var fc={Una:'fu',Doris:'fd',Eagle:'fe'}[p];
-    ch+='<div class="chart-lbl"><span>'+p+'</span><span>₩'+paid[p].toLocaleString()+(tw2?' · NT$'+tw2.toLocaleString():'')+' </span></div>'+
-    '<div class="chart-bg"><div class="chart-fill '+fc+'" style="width:'+pct+'%"></div></div>';
+    ch+='<div class="chart-lbl"><span>'+p+'</span><span>₩'+paidKRW[p].toLocaleString()+(tw2?' · NT$'+tw2.toLocaleString():'')+' </span></div>'+
+      '<div class="chart-bg"><div class="chart-fill '+fc+'" style="width:'+pct+'%"></div></div>';
   });
   ci.innerHTML=ch;cw.style.display='block';
 }
