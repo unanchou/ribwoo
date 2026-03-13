@@ -1819,13 +1819,19 @@ function renderExps(){
       sw.forEach(function(p){shareMap[p]=Math.round(amtKRW*e.ratios[p]/totalR);});
       var diff=amtKRW-(function(){ var _s=0; for(var _k in shareMap){ if(shareMap.hasOwnProperty(_k)) _s+=shareMap[_k]; } return _s; })();
       if(diff&&sw.length)shareMap[sw[0]]+=diff;
-      metaStr=sw.map(function(p){ return p+' ×'+e.ratios[p]+'份 ₩'+shareMap[p].toLocaleString(); }).join('　');
+      var _metaSym=showKRW_log?'₩':'NT$';
+      metaStr=sw.map(function(p){
+        var _dispAmt=showKRW_log?shareMap[p]:(getRate()?Math.round(shareMap[p]/getRate()):shareMap[p]);
+        return p+' ×'+e.ratios[p]+'份 '+_metaSym+_dispAmt.toLocaleString();
+      }).join('　');
     } else {
       var sh=Math.round(amtKRW/sw.length);
       sw.forEach(function(p){shareMap[p]=sh;});
       var diff2=amtKRW-sh*sw.length;
       if(diff2&&sw.length)shareMap[sw[0]]+=diff2;
-      metaStr='分帳：'+sw.join(' / ')+' · 每人 ₩'+sh.toLocaleString();
+      var _metaSym2=showKRW_log?'₩':'NT$';
+      var _sh2=showKRW_log?sh:(getRate()?Math.round(sh/getRate()):sh);
+      metaStr='分帳：'+sw.join(' / ')+' · 每人 '+_metaSym2+_sh2.toLocaleString();
     }
     var isSettled=e.settled||false;
     var hist=e.history||[];
