@@ -865,7 +865,6 @@ function pollSync() {
         if (row.key === 'seoul_seats') { Object.assign(seatOverrides, val); renderSeats(); }
         if (row.key === 'seoul_builtin_edits') { builtinEdits = val; applyAllBuiltinEdits(); }
         if (row.key === 'seoul_notes') { notes = val; renderNotes(); }
-        if (row.key === 'seoul_settled_transfers') { settledTransfers = val; renderExps(); }
       } catch(e) {}
     });
   }).catch(function(){});
@@ -899,42 +898,21 @@ var EVENTS=[
   {dt:'2026-03-23T11:40:00+09:00',label:'Una & Eagle 回程'},
 ].map(function(e){ return {dt:e.dt, label:e.label, ts:new Date(e.dt).getTime()}; });
 
-// 倒數階段定義
-var T_DEPART   = new Date('2026-03-20T15:15:00+08:00').getTime();
-var T_SHOW1    = new Date('2026-03-21T14:00:00+09:00').getTime();
-var T_SHOW1END = new Date('2026-03-21T17:00:00+09:00').getTime();
-var T_SHOW2    = new Date('2026-03-21T19:00:00+09:00').getTime();
-var T_SHOW2END = new Date('2026-03-21T21:00:00+09:00').getTime();
-var T_SHOW3    = new Date('2026-03-22T14:00:00+09:00').getTime();
-var T_SHOW3END = new Date('2026-03-22T17:00:00+09:00').getTime(); // 預計結束
+var T_DEPART=EVENTS[0].ts;
+var T_SHOW1 =EVENTS[2].ts;
+var T_END   =new Date('2026-03-22T17:00:00+09:00').getTime();
 
 function pad(n){var s=String(n);return s.length>=2?s:'0'+s;}
 function fmtMs(ms){
   var d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
-  if(d>0) return d+'d '+pad(h)+':'+pad(m)+':'+pad(s);
-  return pad(h)+':'+pad(m)+':'+pad(s);
+  return d>0?d+'d '+pad(h)+':'+pad(m)+':'+pad(s):pad(h)+':'+pad(m)+':'+pad(s);
 }
 function tick(){
-  var now=Date.now();
-  var t=document.getElementById('timer');
-  var l=document.getElementById('tlabel');
-  if(now < T_DEPART){
-    t.textContent=fmtMs(T_DEPART-now); l.textContent='距離起飛';
-  } else if(now < T_SHOW1){
-    t.textContent=fmtMs(T_SHOW1-now); l.textContent='距離第一場';
-  } else if(now < T_SHOW1END){
-    t.textContent='見面會進行中 ✦'; l.textContent='第一場';
-  } else if(now < T_SHOW2){
-    t.textContent=fmtMs(T_SHOW2-now); l.textContent='距離第二場';
-  } else if(now < T_SHOW2END){
-    t.textContent='見面會進行中 ✦'; l.textContent='第二場';
-  } else if(now < T_SHOW3){
-    t.textContent=fmtMs(T_SHOW3-now); l.textContent='距離最終場';
-  } else if(now < T_SHOW3END){
-    t.textContent='見面會進行中 ✦'; l.textContent='最終場';
-  } else {
-    t.textContent='美好的回憶 ♡'; l.textContent='';
-  }
+  var now=Date.now(),t=document.getElementById('timer'),l=document.getElementById('tlabel');
+  if(now<T_DEPART){t.textContent=fmtMs(T_DEPART-now);l.textContent='距離起飛'}
+  else if(now<T_SHOW1){t.textContent=fmtMs(T_SHOW1-now);l.textContent='距離第一場'}
+  else if(now<T_END){t.textContent='見面會進行中 ✦';l.textContent=''}
+  else{t.textContent='美好的回憶 ♡';l.textContent=''}
 }
 function renderNextEvent(){
   var now=Date.now(),bar=document.getElementById('next-event-bar');
@@ -1230,7 +1208,12 @@ function updateCurrentHighlight() {
 var fwActive = false;
 var fwParticles = [];
 var fwCanvas, fwCtx, fwAnimFrame;
-
+var fwMilestones = {
+  depart: false,
+  show1: false,
+  show2: false,
+  show3: false
+};
 
 function launchFireworks(duration) {
   if (fwActive) return;
@@ -1290,38 +1273,21 @@ function launchFireworks(duration) {
   animate();
 }
 
-var fwMilestones = {
-  depart: false,
-  show1: false, show1end: false,
-  show2: false, show2end: false,
-  show3: false, show3end: false
-};
 function checkMilestones() {
   var now = Date.now();
-  // 起飛
   if (!fwMilestones.depart && now >= T_DEPART && now < T_DEPART + 60000) {
     fwMilestones.depart = true; launchFireworks(4000);
   }
-  // 第一場開始 / 結束
   if (!fwMilestones.show1 && now >= T_SHOW1 && now < T_SHOW1 + 60000) {
-    fwMilestones.show1 = true; launchFireworks(6000);
+    fwMilestones.show1 = true; launchFireworks(5000);
   }
-  if (!fwMilestones.show1end && now >= T_SHOW1END && now < T_SHOW1END + 60000) {
-    fwMilestones.show1end = true; launchFireworks(5000);
-  }
-  // 第二場開始 / 結束
+  var T_SHOW2 = EVENTS[3].ts;
+  var T_SHOW3 = EVENTS[4].ts;
   if (!fwMilestones.show2 && now >= T_SHOW2 && now < T_SHOW2 + 60000) {
-    fwMilestones.show2 = true; launchFireworks(6000);
+    fwMilestones.show2 = true; launchFireworks(5000);
   }
-  if (!fwMilestones.show2end && now >= T_SHOW2END && now < T_SHOW2END + 60000) {
-    fwMilestones.show2end = true; launchFireworks(5000);
-  }
-  // 最終場開始 / 結束
   if (!fwMilestones.show3 && now >= T_SHOW3 && now < T_SHOW3 + 60000) {
-    fwMilestones.show3 = true; launchFireworks(8000);
-  }
-  if (!fwMilestones.show3end && now >= T_SHOW3END && now < T_SHOW3END + 60000) {
-    fwMilestones.show3end = true; launchFireworks(10000);
+    fwMilestones.show3 = true; launchFireworks(6000);
   }
 }
 
@@ -1738,40 +1704,7 @@ function openSettleModal(id){
 }
 function closeSettleModal(){document.getElementById('settle-modal').classList.remove('on');}
 document.getElementById('settle-modal').addEventListener('click',function(ev){if(ev.target===this)closeSettleModal();});
-// confirmSettle unified below
-function undoSettle(id){
-  var e=exps.find(function(x){ return x.id===id; });
-  if(!e)return;
-  e.settled=false;e.settledDate='';e.settledNote='';
-  sv('seoul_exps',exps);renderExps();
-}
-
-// ── 結清轉帳記錄 ──
-var settledTransfers = {};
-function toggleTransfer(key){
-  settledTransfers[key]=!settledTransfers[key];
-  sv('seoul_settled_transfers', settledTransfers);
-  renderExps();
-}
-function openTransferSettle(key, from, to, amtStr){
-  document.getElementById('settle-modal-desc').textContent=from+' 轉給 '+to+'　'+amtStr;
-  document.getElementById('settle-note-input').value='';
-  var today=new Date();
-  var mm=String(today.getMonth()+1).padStart(2,'0');
-  var dd=String(today.getDate()).padStart(2,'0');
-  document.getElementById('settle-date-input').value=today.getFullYear()+'-'+mm+'-'+dd;
-  settleTargetId='_transfer_:'+key;
-  document.getElementById('settle-modal').classList.add('on');
-}
 function confirmSettle(){
-  if(typeof settleTargetId==='string' && settleTargetId.indexOf('_transfer_:')===0){
-    var key=settleTargetId.replace('_transfer_:','');
-    settledTransfers[key]=true;
-    sv('seoul_settled_transfers', settledTransfers);
-    renderExps();
-    closeSettleModal();
-    return;
-  }
   var e=exps.find(function(x){ return x.id===settleTargetId; });
   if(!e)return;
   var d=document.getElementById('settle-date-input').value;
@@ -1781,6 +1714,12 @@ function confirmSettle(){
   e.history.push({date:dateStr,note:'結清：'+n,fromAmt:e.amount,fromCur:e.cur||'krw',toAmt:0,toCur:e.cur||'krw'});
   e.settled=true;e.settledDate=dateStr;e.settledNote=n;
   sv('seoul_exps',exps);renderExps();closeSettleModal();
+}
+function undoSettle(id){
+  var e=exps.find(function(x){ return x.id===id; });
+  if(!e)return;
+  e.settled=false;e.settledDate='';e.settledNote='';
+  sv('seoul_exps',exps);renderExps();
 }
 
 function renderExps(){
@@ -1938,19 +1877,10 @@ function renderExps(){
     while(ci2<cArr.length && di2<dArr.length){
       var tamt=Math.min(cArr[ci2].v, dArr[di2].v);
       if(tamt>0.5){
-        var tKey=dArr[di2].n+'→'+cArr[ci2].n+'_'+settleTabCur;
-        var isDone=settledTransfers[tKey]||false;
-        var tAmtRound=Math.round(tamt);
-        rows+='<div class="sum-row" style="padding:10px 15px;border-bottom:1px solid var(--line);'+(isDone?'opacity:.5':'')+'">'+
-          '<span style="font-size:14px">'+(isDone?'<s>':'')+'<b>'+dArr[di2].n+'</b> 轉給 <b>'+cArr[ci2].n+'</b>'+(isDone?'</s>':'')+'</span>'+
-          '<span style="display:flex;align-items:center;gap:8px">'+
-            '<span class="'+(isDone?'neu':'neg')+'" style="font-size:15px;font-weight:700">'+(isDone?'✓ 已付':sym+tAmtRound.toLocaleString())+'</span>'+
-            (isDone
-              ? '<button class="tl-btn" style="color:var(--ink3)" onclick="toggleTransfer(''+tKey+'')">↩ 撤銷</button>'
-              : '<button class="tl-btn" style="color:var(--sage);font-weight:700" onclick="openTransferSettle(''+tKey+'',''+dArr[di2].n+'',''+cArr[ci2].n+'',''+sym+tAmtRound.toLocaleString()+'')">結清</button>'
-            )+
-          '</span>'+
-        '</div>';
+        rows+='<div class="sum-row" style="padding:10px 15px;border-bottom:1px solid var(--line)">'+
+          '<span style="font-size:14px"><b>'+dArr[di2].n+'</b> 轉給 <b>'+cArr[ci2].n+'</b></span>'+
+          '<span class="neg" style="font-size:15px;font-weight:700">'+sym+Math.round(tamt).toLocaleString()+'</span>'+
+          '</div>';
         cArr[ci2].v-=tamt; dArr[di2].v-=tamt;
       }
       if(cArr[ci2].v<0.5) ci2++;
@@ -2059,18 +1989,16 @@ function init() {
       dbGet('seoul_schs'),
       dbGet('seoul_exps'),
       dbGet('seoul_seats'),
-      dbGet('seoul_notes'),
-      dbGet('seoul_settled_transfers')
+      dbGet('seoul_notes')
     ]);
   }).then(function(results) {
     var rate = results[0], savedSchs = results[1], savedExps = results[2];
-    var savedSeats = results[3], savedNotes = results[4], savedTransfers = results[5];
+    var savedSeats = results[3], savedNotes = results[4];
     if (rate !== null) document.getElementById('rate').value = rate;
     if (savedSchs) schs = savedSchs;
     if (savedExps) exps = savedExps;
     if (savedSeats) Object.assign(seatOverrides, savedSeats);
     if (savedNotes && Array.isArray(savedNotes)) notes = savedNotes;
-    if (savedTransfers) settledTransfers = savedTransfers;
     setSync('ok');
     renderSchs();
     renderExps();
